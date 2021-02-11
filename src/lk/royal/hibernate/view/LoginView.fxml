@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXPasswordField?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.RadialGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="611.0" prefWidth="519.0" style="-fx-background-radius: 50; -fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.royal.hibernate.controller.LoginViewController">
+   <children>
+      <ImageView fx:id="imgLogo" fitHeight="192.0" fitWidth="311.0" layoutX="134.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../assests/logo.png" />
+         </image>
+      </ImageView>
+      <Pane layoutX="21.0" layoutY="235.0" prefHeight="368.0" prefWidth="480.0" style="-fx-background-color: linear-gradient(to bottom, #040715, #060b24, #030e33, #000f41, #020e4f, #090d4e, #0e0d4d, #130c4c, #130e3d, #130f2e, #120f1f, #0e0e0e); -fx-background-radius: 50;">
+         <children>
+            <JFXTextField fx:id="txtName" labelFloat="true" layoutX="96.0" layoutY="93.0" prefHeight="48.0" prefWidth="323.0" promptText="User Name" styleClass="jfxTextFieldFontColour" stylesheets="@../assests/style/style.css">
+               <font>
+                  <Font name="Segoe UI" size="21.0" />
+               </font>
+               <unFocusColor>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#0a83a4" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </unFocusColor>
+               <focusColor>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#c227ff" />
+                        <Stop color="#39f2ff" offset="0.48366013071895425" />
+                        <Stop color="#ff4157" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </focusColor>
+            </JFXTextField>
+            <JFXPasswordField fx:id="txtPassword" labelFloat="true" layoutX="98.0" layoutY="214.0" prefHeight="48.0" prefWidth="323.0" promptText="Password" styleClass="jfxTextFieldFontColour" stylesheets="@../assests/style/style.css">
+               <font>
+                  <Font name="Segoe UI" size="21.0" />
+               </font>
+               <unFocusColor>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#0a83a4" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </unFocusColor>
+               <focusColor>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#6e00a4" />
+                        <Stop color="#b41fff" offset="0.007246376811594203" />
+                        <Stop color="#0ec3ff" offset="0.4934640522875817" />
+                        <Stop color="#8c2dba" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </focusColor>
+            </JFXPasswordField>
+            <JFXButton fx:id="btnViewPW" buttonType="RAISED" layoutX="421.0" layoutY="226.0" onAction="#btnViewPWOnAction" prefHeight="31.0" prefWidth="48.0" style="-fx-background-radius: 100;" text=" ">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assests/visible_filled_100px.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <ripplerFill>
+                  <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                     <stops>
+                        <Stop color="#624dff" />
+                        <Stop color="#39f2ff" offset="0.48366013071895425" />
+                        <Stop color="#ff4157" offset="1.0" />
+                     </stops>
+                  </RadialGradient>
+               </ripplerFill>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
+            <ImageView fitHeight="48.0" fitWidth="55.0" layoutX="27.0" layoutY="95.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../assests/user_male_circle_100px.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="39.0" fitWidth="35.0" layoutX="35.0" layoutY="222.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../assests/key_100px.png" />
+               </image>
+            </ImageView>
+            <JFXButton fx:id="btnLogin" buttonType="RAISED" layoutX="170.0" layoutY="302.0" onAction="#btnLoginOnAction" prefHeight="41.0" prefWidth="126.0" style="-fx-border-color: white; -fx-border-radius: 50; -fx-background-radius: 50;" stylesheets="@../assests/style/style.css" text="Login" textFill="WHITE">
+               <ripplerFill>
+                  <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                     <stops>
+                        <Stop color="#6e00a4" />
+                        <Stop color="#6e00a4" offset="0.007246376811594203" />
+                        <Stop color="#0ec3ff" offset="0.4934640522875817" />
+                        <Stop color="#ff337e" offset="1.0" />
+                     </stops>
+                  </RadialGradient>
+               </ripplerFill>
+               <font>
+                  <Font name="Times New Roman" size="18.0" />
+               </font>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
+            <Label fx:id="lblStatus" layoutX="122.0" layoutY="274.0" prefHeight="21.0" prefWidth="174.0" textFill="RED">
+               <font>
+                  <Font name="Segoe Print" size="15.0" />
+               </font>
+            </Label>
+            <JFXTextField fx:id="txtPasswordClone" labelFloat="true" layoutX="98.0" layoutY="214.0" prefHeight="48.0" prefWidth="323.0" promptText="Password" styleClass="jfxTextFieldFontColour" stylesheets="@../assests/style/style.css">
+               <font>
+                  <Font name="Segoe UI" size="21.0" />
+               </font>
+               <unFocusColor>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#0a83a4" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </unFocusColor>
+               <focusColor>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#c227ff" />
+                        <Stop color="#39f2ff" offset="0.48366013071895425" />
+                        <Stop color="#ff4157" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </focusColor>
+            </JFXTextField>
+            <JFXButton fx:id="btnInvisible" buttonType="RAISED" layoutX="421.0" layoutY="226.0" onAction="#btnInvisibleOnAction" prefHeight="31.0" prefWidth="48.0" style="-fx-background-radius: 100;" text=" ">
+               <graphic>
+                  <ImageView fitHeight="31.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../assests/invisible_100px.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <ripplerFill>
+                  <RadialGradient centerX="0.5" centerY="0.5" radius="0.5">
+                     <stops>
+                        <Stop color="#624dff" />
+                        <Stop color="#39f2ff" offset="0.48366013071895425" />
+                        <Stop color="#ff4157" offset="1.0" />
+                     </stops>
+                  </RadialGradient>
+               </ripplerFill>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </JFXButton>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
