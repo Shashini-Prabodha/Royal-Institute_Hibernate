@@ -1,10 +1,11 @@
 package lk.royal.hibernate.bo.custom;
 
+import lk.royal.hibernate.bo.SuperBO;
 import lk.royal.hibernate.dto.StudentDTO;
 
 import java.util.ArrayList;
 
-public interface StudentBO {
+public interface StudentBO extends SuperBO {
     boolean saveStudent(StudentDTO dto) throws Exception;
 
     boolean updateStudent(StudentDTO dto) throws Exception;

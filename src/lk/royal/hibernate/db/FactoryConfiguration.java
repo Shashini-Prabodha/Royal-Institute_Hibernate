@@ -1,5 +1,7 @@
 package lk.royal.hibernate.db;
 
+import lk.royal.hibernate.entity.Course;
+import lk.royal.hibernate.entity.Registration;
 import lk.royal.hibernate.entity.Student;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -16,7 +18,12 @@ public class FactoryConfiguration {
    private SessionFactory sessionFactory;
 
    private FactoryConfiguration(){
-//
+       Configuration configuration = new Configuration().configure()
+               .addAnnotatedClass(Student.class)
+               .addAnnotatedClass(Course.class)
+               .addAnnotatedClass(Registration.class);
+
+       sessionFactory = configuration.buildSessionFactory();
 //       Properties properties = new Properties();
 //
 //       try {

@@ -6,7 +6,7 @@ import java.sql.Date;
 @Entity
 public class Registration implements SuperEntity{
     @Id
-    @GeneratedValue
+
     private int regNo;
     private Date regDate;
     private double regFee;

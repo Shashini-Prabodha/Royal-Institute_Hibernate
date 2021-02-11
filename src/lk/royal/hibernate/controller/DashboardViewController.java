@@ -63,9 +63,9 @@ public class DashboardViewController {
     @FXML private TableColumn<?, ?> colSID1,colSName1,colAddress1,colContact1,colDOB1,colGender1,colDeleteS1;
     @FXML private Label lblNoOfStudent,lblNoOfCourse;
 
-//    StudentBO studentBO= BOFactory.getInstance().getBO(BOType.STUDENT);
-//    CourseBO courseBO= BOFactory.getInstance().getBO(BOType.COURSE);
-//    RegisterBO registerBO= BOFactory.getInstance().getBO(BOType.REGISTER);
+    StudentBO studentBO= BOFactory.getInstance().getBO(BOType.STUDENT);
+    CourseBO courseBO= BOFactory.getInstance().getBO(BOType.COURSE);
+    RegisterBO registerBO= BOFactory.getInstance().getBO(BOType.REGISTER);
 
     public void initialize(){
 
