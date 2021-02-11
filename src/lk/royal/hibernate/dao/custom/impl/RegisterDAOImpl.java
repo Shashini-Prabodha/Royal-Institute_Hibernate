@@ -6,6 +6,7 @@ import lk.royal.hibernate.entity.Course;
 import lk.royal.hibernate.entity.Registration;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 
 import java.io.Serializable;
@@ -89,5 +90,15 @@ public class RegisterDAOImpl implements RegisterDAO {
     @Override
     public void setSession(Session session) {
 
+    }
+
+    @Override
+    public int getLastRegNo() throws Exception {
+        Transaction transaction = session.beginTransaction();
+        NativeQuery sqlQuery = session.createSQLQuery("select regNo from Registration order by regNo desc limit 1");
+        int id = (Integer)sqlQuery.uniqueResult();
+        transaction.commit();
+        session.close();
+        return id;
     }
 }

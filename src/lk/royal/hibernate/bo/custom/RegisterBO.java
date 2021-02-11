@@ -15,4 +15,7 @@ public interface RegisterBO extends SuperBO {
     RegistrationDTO getRegister(String id) throws Exception;
 
     ArrayList<RegistrationDTO> getAllRegister() throws Exception;
+
+    int newRegNo() throws Exception;
+
 }

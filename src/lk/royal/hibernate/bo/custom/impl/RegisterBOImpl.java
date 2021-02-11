@@ -46,6 +46,11 @@ public class RegisterBOImpl implements RegisterBO {
                     registration.getRegFee())
             );
         }
-        return null;
+        return list;
+    }
+
+    @Override
+    public int newRegNo() throws Exception {
+        return registerDAO.getLastRegNo()+1;
     }
 }

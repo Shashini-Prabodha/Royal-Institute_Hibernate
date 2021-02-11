@@ -24,6 +24,7 @@ public class FactoryConfiguration {
                .addAnnotatedClass(Registration.class);
 
        sessionFactory = configuration.buildSessionFactory();
+
 //       Properties properties = new Properties();
 //
 //       try {
@@ -41,6 +42,14 @@ public class FactoryConfiguration {
 //               .applySettings(configuration.getProperties()).build();
 //
 //       sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+
+
+
+/*
+       Configuration configuration = new Configuration();
+       ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+       configuration.addAnnotatedClass(Student.class);
+       sessionFactory = configuration.buildSessionFactory(serviceRegistry);*/
    }
    public static FactoryConfiguration getInstance(){
        return (factoryConfiguration==null)?factoryConfiguration=new FactoryConfiguration():factoryConfiguration;

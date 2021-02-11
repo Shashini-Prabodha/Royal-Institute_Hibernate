@@ -23,4 +23,6 @@ public interface CrudDAO<T extends SuperEntity,ID extends Serializable> extends 
 
     List<T> getAll() throws Exception;
 
+
+
 }

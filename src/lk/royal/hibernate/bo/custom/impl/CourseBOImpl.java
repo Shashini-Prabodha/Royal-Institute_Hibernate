@@ -46,6 +46,24 @@ public class CourseBOImpl implements CourseBO {
                     course.getDuration(),
                     course.getFee()));
         }
-        return null;
+        return list;
+    }
+
+    @Override
+    public String newCourseID() throws Exception {
+        String lastID = courseDAO.getLastCourseID();
+
+        if (lastID == null) {
+            return "C001";
+        } else {
+            int newID = Integer.parseInt(lastID.substring(1, 4)) + 1;
+            if (newID < 10) {
+                return "C00" + newID;
+            } else if (newID < 100) {
+                return "C0" + newID;
+            } else {
+                return "C" + newID;
+            }
+        }
     }
 }

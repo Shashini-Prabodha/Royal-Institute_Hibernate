@@ -6,6 +6,7 @@ import lk.royal.hibernate.entity.Course;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 
 import java.io.Serializable;
@@ -94,5 +95,15 @@ public class CourseDAOImpl implements CourseDAO {
     @Override
     public void setSession(Session session) {
 
+    }
+
+    @Override
+    public String getLastCourseID() throws Exception {
+        Transaction transaction = session.beginTransaction();
+        NativeQuery sqlQuery = session.createSQLQuery("select code from Course order by code desc limit 1");
+        String id = (String) sqlQuery.uniqueResult();
+        transaction.commit();
+        session.close();
+        return id;
     }
 }

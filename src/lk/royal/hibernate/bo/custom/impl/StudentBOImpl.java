@@ -48,6 +48,24 @@ public class StudentBOImpl implements StudentBO {
                     student.getGender())
             );
         }
-        return null;
+        return list;
+    }
+
+    @Override
+    public String newStudentID() throws Exception {
+        String lastID = studentDAO.getLastStudentID();
+
+        if (lastID == null) {
+            return "S001";
+        } else {
+            int newID = Integer.parseInt(lastID.substring(1, 4)) + 1;
+            if (newID < 10) {
+                return "S00" + newID;
+            } else if (newID < 100) {
+                return "S0" + newID;
+            } else {
+                return "S" + newID;
+            }
+        }
     }
 }

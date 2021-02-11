@@ -15,4 +15,7 @@ public interface StudentBO extends SuperBO {
     StudentDTO getStudent(String id) throws Exception;
 
     ArrayList<StudentDTO> getAllStudent() throws Exception;
+
+    String newStudentID() throws Exception;
+
 }
