@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="RegEx_Simulator">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/lk/royal/hibernate/lib/RegEx_Simulator.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

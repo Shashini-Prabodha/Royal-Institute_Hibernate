@@ -18,4 +18,5 @@ public interface CourseBO extends SuperBO {
 
     String newCourseID() throws Exception;
 
+
 }

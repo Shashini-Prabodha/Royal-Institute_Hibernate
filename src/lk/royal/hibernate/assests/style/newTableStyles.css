@@ -31,3 +31,7 @@
     -fx-alignment: center;
 
 }
+.table-view .cell{
+    -fx-font-size: 17px;
+    -fx-font-family: "Times New Roman";
+}

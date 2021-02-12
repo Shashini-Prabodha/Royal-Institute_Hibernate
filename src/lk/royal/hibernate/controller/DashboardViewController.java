@@ -10,19 +10,25 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Paint;
 import lk.royal.hibernate.bo.BOFactory;
 import lk.royal.hibernate.bo.BOType;
 import lk.royal.hibernate.bo.custom.CourseBO;
 import lk.royal.hibernate.bo.custom.RegisterBO;
 import lk.royal.hibernate.bo.custom.StudentBO;
+import lk.royal.hibernate.dto.CourseDTO;
 import lk.royal.hibernate.dto.StudentDTO;
+import lk.royal.hibernate.view.TM.CourseTM;
 import lk.royal.hibernate.view.TM.StudentTM;
 
+import java.awt.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class DashboardViewController {
 
@@ -54,9 +60,9 @@ public class DashboardViewController {
     @FXML
     private Tab tabCourse;
     @FXML
-    private TableView<?> tblCourse;
+    private TableView<CourseTM> tblCourse;
     @FXML
-    private TableColumn<?, ?> colCID, colCName, colType, colDurationC, colFeeC, colDeleteC;
+    private TableColumn colCode, colCName, colType, colDurationC, colFeeC, colDeleteC;
     @FXML
     private Label lblCIDC;
     @FXML
@@ -66,7 +72,9 @@ public class DashboardViewController {
     @FXML
     private JFXTextField txtDurationC, txtFeeC, txtCourseNameC;
     @FXML
-    private JFXButton btnNew, btnSaveC, btnUpdateC;
+    private JFXButton btnNewCourse, btnSaveC, btnUpdateC;
+    @FXML
+    private JFXComboBox cmbDurationType;
 
 
     @FXML
@@ -96,7 +104,7 @@ public class DashboardViewController {
     @FXML
     private JFXButton btnSearch, btnOff;
     @FXML
-    private TableView<?> tblStudent1;
+    private TableView<?> tblStudentCWise;
     @FXML
     private TableColumn colSID1, colSName1, colAddress1, colContact1, colDOB1, colGender1, colDeleteS1;
     @FXML
@@ -110,6 +118,25 @@ public class DashboardViewController {
 
         loadID();
         loadAllStudent1();
+        setNoOfCourse();
+        setNoOfStudent();
+        loadDurationTypes();
+        loadAllCourseDetail();
+
+
+        //set course detail tab table col
+        colCode.setCellValueFactory(new PropertyValueFactory<>("code"));
+        colCName.setCellValueFactory(new PropertyValueFactory<>("courseName"));
+        colType.setCellValueFactory(new PropertyValueFactory<>("type"));
+        colDurationC.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        colFeeC.setCellValueFactory(new PropertyValueFactory<>("fee"));
+        colDeleteC.setCellValueFactory(new PropertyValueFactory<>("btn"));
+
+        //set course detail tab table col click
+
+        tblCourse.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            setDataCourse(newValue);
+        });
 
         //set student detail tab table col
         colSID.setCellValueFactory(new PropertyValueFactory<>("ID"));
@@ -119,6 +146,7 @@ public class DashboardViewController {
         colDOB.setCellValueFactory(new PropertyValueFactory<>("dob"));
         colGender.setCellValueFactory(new PropertyValueFactory<>("gender"));
         colDeleteS.setCellValueFactory(new PropertyValueFactory<>("btn"));
+
 
         //set student detail tab table col click
 
@@ -130,11 +158,6 @@ public class DashboardViewController {
 
 
     @FXML
-    void btnNewOnAction(ActionEvent event) {
-
-    }
-
-    @FXML
     void btnOffOnAction(ActionEvent event) {
 
     }
@@ -144,10 +167,6 @@ public class DashboardViewController {
 
     }
 
-    @FXML
-    void btnSaveCOnAction(ActionEvent event) {
-
-    }
 
     @FXML
     void btnSearchOnAction(ActionEvent event) {
@@ -160,9 +179,6 @@ public class DashboardViewController {
 
     }
 
-    private void setNoOfStudent() {
-
-    }
 
     //genarate student id
     public String generateSID() {
@@ -179,15 +195,15 @@ public class DashboardViewController {
     public void btnSearchStudentROnAction(ActionEvent actionEvent) {
     }
 
-    public void btnUpdateOnActionC(ActionEvent actionEvent) {
-    }
-
 
     //    ************************  Student Detail Tab Start*****************************
     //load reg sid and student detail sid
     void loadID() {
         txtSIDR.setText(generateSID());
         lblSID1.setText(generateSID());
+        lblCIDC.setText(generateCCode());
+        lblCID.setText(generateCCode());
+
     }
 
     //load student detail tab table
@@ -277,6 +293,7 @@ public class DashboardViewController {
                 loadID();
                 loadAllStudent1();
                 clearStudentDetailField();
+                setNoOfStudent();
                 new Alert(Alert.AlertType.CONFIRMATION, "Student Saved...!").show();
             } else {
                 new Alert(Alert.AlertType.ERROR, "Failed...!").show();
@@ -325,4 +342,211 @@ public class DashboardViewController {
 
     //    ************************  Student Detail Tab End *****************************
 
+
+    void setNoOfCourse() {
+        int count = 0;
+        try {
+            ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
+            for (CourseDTO courseDTO : allCourse) {
+                if (courseDTO != null) {
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        lblNoOfCourse.setText(count + "");
+
+    }
+
+    void setNoOfStudent() {
+        int count = 0;
+        try {
+            ArrayList<StudentDTO> allStudent = studentBO.getAllStudent();
+            for (StudentDTO studentDTO : allStudent) {
+                if (studentDTO != null) {
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        lblNoOfStudent.setText(count + "");
+    }
+
+    //genarate course code
+    public String generateCCode() {
+        String s = null;
+        try {
+            s = courseBO.newCourseID();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return s;
+    }
+
+    //set Course detail tab data to click table
+    private void setDataCourse(CourseTM tm) {
+        try {
+            lblCIDC.setText(tm.getCode());
+            txtCourseNameC.setText(tm.getCourseName());
+            txtDurationC.setText(tm.getCode());
+            txtFeeC.setText(tm.getFee() + "");
+            if (tm.getType().equals("Part Time")) {
+                rbtnPartTimeC.setSelected(true);
+            } else {
+                rbtnFullTimeC.setSelected(true);
+            }
+        } catch (NullPointerException e) {
+
+        }
+    }
+
+
+    //course detail tab field clear
+    void clearCourseDetailField() {
+        txtCourseNameC.clear();
+        txtDurationC.clear();
+        txtFeeC.clear();
+        rbtnPartTimeC.setSelected(false);
+        rbtnFullTimeC.setSelected(false);
+        lblCIDC.setText(generateCCode());
+        cmbDurationType.getItems().clear();
+    }
+
+    void loadDurationTypes() {
+        cmbDurationType.getItems().addAll("Year");
+        cmbDurationType.getItems().addAll("Month");
+        cmbDurationType.getItems().addAll("Week");
+        cmbDurationType.getItems().addAll("Day");
+    }
+
+    @FXML
+    void btnNewCourseOnAction(ActionEvent event) {
+        clearCourseDetailField();
+    }
+
+    //load course detail tab table
+    void loadAllCourseDetail() {
+        try {
+            ObservableList<CourseTM> tmlist = FXCollections.observableArrayList();
+            ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
+            for (CourseDTO dto : allCourse) {
+                JFXButton btn = new JFXButton("Delete");
+                CourseTM tm = new CourseTM(dto.getCode(), dto.getCourseName(), dto.getType(), dto.getDuration(), dto.getFee(), btn);
+                tmlist.add(tm);
+                btn.setOnAction((e) -> {
+                    try {
+
+                        ButtonType ok = new ButtonType("OK",
+                                ButtonBar.ButtonData.OK_DONE);
+                        ButtonType no = new ButtonType("NO",
+                                ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                                "Are You Sure ?", ok, no);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.orElse(no) == ok) {
+
+                            if (courseBO.deleteCourse(tm.getCode())) {
+                                new Alert(Alert.AlertType.CONFIRMATION,
+                                        "Deleted", ButtonType.OK).show();
+                                loadAllCourseDetail();
+                                clearCourseDetailField();
+                                return;
+                            }
+                            new Alert(Alert.AlertType.WARNING,
+                                    "Try Again", ButtonType.OK).show();
+                        } else {
+                            //no
+                        }
+
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+
+                });
+
+            }
+
+
+            tblCourse.setItems(tmlist);
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    @FXML
+    void btnSaveCOnAction(ActionEvent event) {
+        try {
+            if (Pattern.compile("^[A-z ]{1,}$").matcher(txtCourseNameC.getText()).matches()) {
+                if (rbtnPartTimeC.isSelected() || rbtnFullTimeC.isSelected()) {
+                    if (Pattern.compile("^[1-9.]{1,}$").matcher(txtDurationC.getText().trim()).matches()) {
+                        if (!cmbDurationType.getSelectionModel().isEmpty()) {
+                            if (Pattern.compile("^[0-9.]{1,}$").matcher(txtFeeC.getText().trim()).matches()) {
+
+                                boolean saveCourse = courseBO.saveCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getType(), (txtDurationC.getText() + " " + cmbDurationType.getSelectionModel().toString()), Double.parseDouble(txtFeeC.getText().trim())));
+                                if (saveCourse){
+                                    loadAllCourseDetail();
+                                    generateCCode();
+                                    clearCourseDetailField();
+                                    new Alert(Alert.AlertType.CONFIRMATION, "Course Saved...!").show();
+                                } else {
+                                    new Alert(Alert.AlertType.ERROR, "Failed...!").show();
+
+                                }
+                            } else {
+                                new Alert(Alert.AlertType.ERROR, "Check your Fee Field...\n(Use only numbers for fill Fee...!)").show();
+                                txtFeeC.setFocusColor(Paint.valueOf("red"));
+                                txtFeeC.requestFocus();
+
+                            }
+                        } else {
+                            cmbDurationType.setFocusColor(Paint.valueOf("red"));
+                            cmbDurationType.requestFocus();
+
+                        }
+                    } else {
+                        new Alert(Alert.AlertType.ERROR, "Check your Duration Field...\n(Use only numbers for fill duration...!)").show();
+                        txtDurationC.setFocusColor(Paint.valueOf("red"));
+                        txtDurationC.requestFocus();
+
+                    }
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Please Choose course type...!").show();
+                    rbtnFullTimeC.requestFocus();
+                    rbtnPartTimeC.requestFocus();
+
+                }
+
+            }else {
+                new Alert(Alert.AlertType.ERROR, "Please input course name...!").show();
+                txtCourseNameC.setFocusColor(Paint.valueOf("red"));
+                txtCourseNameC.requestFocus();
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getType() {
+        if (rbtnFullTimeC.isSelected()) {
+            return "Full Time";
+        } else {
+            return "Part Time";
+
+        }
+    }
+
+    public void btnUpdateOnActionC(ActionEvent actionEvent) {
+    }
+
+    public void cmbDurationTypeOnAction(ActionEvent actionEvent) {
+        String s = (String) cmbDurationType.getValue();
+        System.out.println(s);
+
+    }
 }

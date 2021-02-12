@@ -4,6 +4,7 @@
     <facet type="hibernate" name="Hibernate">
       <configuration>
         <datasource-map>
+          <unit-entry name="hibernate.cfg.xml" />
           <unit-entry name="lk:royal:hibernate:hibernate.cfg.xml" />
         </datasource-map>
         <naming-strategy-map />
@@ -30,5 +31,6 @@
     <orderEntry type="library" name="jfoenix-8.0.7" level="project" />
     <orderEntry type="library" name="mysql-connector-java-8.0.20" level="project" />
     <orderEntry type="library" name="antlr-2.7.7" level="project" />
+    <orderEntry type="library" name="RegEx_Simulator" level="project" />
   </component>
 </module>

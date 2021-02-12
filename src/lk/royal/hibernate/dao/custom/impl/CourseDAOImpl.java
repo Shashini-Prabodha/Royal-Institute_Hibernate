@@ -22,6 +22,8 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public boolean save(Course entity) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         Serializable save = session.save(entity);
 
@@ -34,6 +36,8 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public boolean update(Course entity) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
 
         try {
@@ -49,9 +53,11 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public boolean delete(String id) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         try {
-            session.delete(id);
+            session.delete(session.get(Course.class, id));
             transaction.commit();
             session.close();
             return true;
@@ -64,6 +70,8 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public Course get(String id) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         try {
             Course course = session.get(Course.class, id);
@@ -78,6 +86,8 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public List<Course> getAll() throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         try {
 
@@ -99,6 +109,8 @@ public class CourseDAOImpl implements CourseDAO {
 
     @Override
     public String getLastCourseID() throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         NativeQuery sqlQuery = session.createSQLQuery("select code from Course order by code desc limit 1");
         String id = (String) sqlQuery.uniqueResult();

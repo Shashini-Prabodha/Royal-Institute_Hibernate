@@ -22,6 +22,8 @@ public class RegisterDAOImpl implements RegisterDAO {
 
     @Override
     public boolean save(Registration entity) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         Serializable save = session.save(entity);
         transaction.commit();
@@ -31,6 +33,8 @@ public class RegisterDAOImpl implements RegisterDAO {
 
     @Override
     public boolean update(Registration entity) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         try {
             session.update(entity);
@@ -45,6 +49,8 @@ public class RegisterDAOImpl implements RegisterDAO {
 
     @Override
     public boolean delete(String id) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         try {
             session.delete(id);
@@ -59,6 +65,8 @@ public class RegisterDAOImpl implements RegisterDAO {
 
     @Override
     public Registration get(String id) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         try {
             Registration registration = session.get(Registration.class, id);
@@ -73,6 +81,8 @@ public class RegisterDAOImpl implements RegisterDAO {
 
     @Override
     public List<Registration> getAll() throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         try {
 
@@ -94,6 +104,8 @@ public class RegisterDAOImpl implements RegisterDAO {
 
     @Override
     public int getLastRegNo() throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
         Transaction transaction = session.beginTransaction();
         NativeQuery sqlQuery = session.createSQLQuery("select regNo from Registration order by regNo desc limit 1");
         int id = (Integer)sqlQuery.uniqueResult();
