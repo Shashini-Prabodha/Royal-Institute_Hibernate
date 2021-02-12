@@ -19,6 +19,7 @@ import lk.royal.hibernate.bo.custom.CourseBO;
 import lk.royal.hibernate.bo.custom.RegisterBO;
 import lk.royal.hibernate.bo.custom.StudentBO;
 import lk.royal.hibernate.dto.CourseDTO;
+import lk.royal.hibernate.dto.RegistrationDTO;
 import lk.royal.hibernate.dto.StudentDTO;
 import lk.royal.hibernate.view.TM.CourseTM;
 import lk.royal.hibernate.view.TM.StudentTM;
@@ -27,6 +28,7 @@ import java.awt.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -38,7 +40,7 @@ public class DashboardViewController {
     @FXML
     private Tab tabReg;
     @FXML
-    private JFXTextField txtSIDR, txtSName, txtAddr, txtContact, txtDuration, txtFee;
+    private JFXTextField txtSIDR, txtSName, txtAddr, txtContact, txtDuration, txtFee, txtRegFee;
     @FXML
     private JFXDatePicker dataPicker;
     @FXML
@@ -48,7 +50,7 @@ public class DashboardViewController {
     @FXML
     private Label lblRegNo, lblCID;
     @FXML
-    private JFXComboBox<?> cmbCourse;
+    private JFXComboBox cmbCourseR;
     @FXML
     private ToggleGroup group;
     @FXML
@@ -100,7 +102,7 @@ public class DashboardViewController {
     @FXML
     private Tab tabDetail;
     @FXML
-    private JFXComboBox<?> cmbCourse1;
+    private JFXComboBox cmbCourse;
     @FXML
     private JFXButton btnSearch, btnOff;
     @FXML
@@ -122,7 +124,8 @@ public class DashboardViewController {
         setNoOfStudent();
         loadDurationTypes();
         loadAllCourseDetail();
-
+        loadAllCourseCmb();
+        genarateRegNo();
 
         //set course detail tab table col
         colCode.setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -164,9 +167,125 @@ public class DashboardViewController {
 
     @FXML
     void btnRegOnAction(ActionEvent event) {
+        try {
+            LocalDate localDate = LocalDate.now();
+            Date date = Date.valueOf(localDate);
+            if (Pattern.compile("^[A-z ]{1,}$").matcher(txtSName.getText()).matches()) {
+                if (Pattern.compile("^[A-z, |0-9:./]*\\b$").matcher(txtAddr.getText()).matches()) {
+                    if (Pattern.compile("^\\d{10}$").matcher(txtContact.getText()).matches()) {
+                        if (dataPicker.getValue() != null) {
+                            if (rbtnMale.isSelected() || rbtnFemale.isSelected()) {
+                                if (!cmbCourseR.getSelectionModel().isEmpty()) {
+                                    if (Pattern.compile("^[0-9.]{1,}$").matcher(txtRegFee.getText().trim()).matches()) {
+
+                                        LocalDate value = dataPicker.getValue();
+                                        Date dob1 = Date.valueOf(value);
+
+                                        StudentDTO studentDTO = new StudentDTO(txtSIDR.getText(), txtSName.getText(), txtAddr.getText(), Integer.parseInt(txtContact.getText()), dob1, getGender());
+                                        CourseDTO courseDTO = new CourseDTO(lblCID.getText(), (String) cmbCourseR.getValue(), getTypeR(), txtDuration.getText(), Double.parseDouble(txtFee.getText().trim()));
+
+                                        RegistrationDTO registrationDTO = new RegistrationDTO(Integer.parseInt(lblRegNo.getText()), date, Double.parseDouble(txtRegFee.getText()),studentDTO,courseDTO.getCode());
+
+//                                        boolean saved = studentBO.saveStudent(studentDTO);
+                                        boolean register = registerBO.saveRegister(registrationDTO);
+                                        if ( register) {
+                                            loadID();
+                                            loadAllStudent1();
+                                            clearStudentDetailField();
+                                            setNoOfStudent();
+                                            genarateRegNo();
+                                            new Alert(Alert.AlertType.CONFIRMATION, "Student Register...!").show();
+                                        } else {
+                                            new Alert(Alert.AlertType.ERROR, "Registration failed...!").show();
+                                        }
+                                    } else {
+                                        new Alert(Alert.AlertType.ERROR, "Check Registration Fee Field...\n(Use only numbers for fill Fee...!)").show();
+                                        txtRegFee.setFocusColor(Paint.valueOf("red"));
+                                        txtRegFee.requestFocus();
+                                    }
+                                } else {
+                                    new Alert(Alert.AlertType.ERROR, "Please choose course ").show();
+                                    cmbCourseR.requestFocus();
+                                    cmbCourseR.setFocusColor(Paint.valueOf("red"));
+                                }
+                            } else {
+                                new Alert(Alert.AlertType.ERROR, "Please Choose gender...!").show();
+                                rbtnMale.requestFocus();
+                            }
+                        } else {
+                            new Alert(Alert.AlertType.ERROR, "Please Input Date of birth...!").show();
+                            dataPicker.requestFocus();
+                        }
+                    } else {
+                        new Alert(Alert.AlertType.ERROR, "Check contact no field...\n(Use only 10 numbers for fill contact no...!)").show();
+                        txtContact.requestFocus();
+                        txtContact.setFocusColor(Paint.valueOf("red"));
+                    }
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Check address field...!)").show();
+                    txtAddr.requestFocus();
+                    txtAddr.setFocusColor(Paint.valueOf("red"));
+                }
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Please input student name...!").show();
+                txtSName.setFocusColor(Paint.valueOf("red"));
+                txtSName.requestFocus();
+            }
+        } catch (
+                Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
+
+    public void cmbCourseROnAction(ActionEvent actionEvent) {
+        try {
+            String cname = (String) cmbCourseR.getValue();
+            CourseDTO courseN = courseBO.getCourseN(cname);
+            lblCID.setText(courseN.getCode());
+            txtDuration.setText(courseN.getDuration());
+            txtFee.setText(courseN.getFee() + "");
+            if (courseN.getType().equals("Part Time")) {
+                rbtnPartTime.setSelected(true);
+            } else {
+                rbtnFullTime.setSelected(true);
+            }
+            txtRegFee.requestFocus();
+            txtRegFee.setFocusColor(Paint.valueOf("red"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //set new reg no
+    void genarateRegNo() {
+        try {
+            lblRegNo.setText(registerBO.newRegNo()+ "");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //find gender in registration tab
+    public String getGender() {
+        if (rbtnMale.isSelected()) {
+            return "Male";
+        } else if (rbtnFemale.isSelected()) {
+            return "Female";
+        } else {
+            return null;
+        }
+    }
+
+    private String getTypeR() {
+        if (rbtnFullTime.isSelected()) {
+            return "Full Time";
+        } else {
+            return "Part Time";
+        }
+    }
 
     @FXML
     void btnSearchOnAction(ActionEvent event) {
@@ -196,25 +315,79 @@ public class DashboardViewController {
     }
 
 
+    //    ************************ Home Tab Start *****************************
+
+    //    get no of course available
+    void setNoOfCourse() {
+        int count = 0;
+        try {
+            ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
+            for (CourseDTO courseDTO : allCourse) {
+                if (courseDTO != null) {
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        lblNoOfCourse.setText(count + "");
+
+    }
+
+    //    get no of student available
+    void setNoOfStudent() {
+        int count = 0;
+        try {
+            ArrayList<StudentDTO> allStudent = studentBO.getAllStudent();
+            for (StudentDTO studentDTO : allStudent) {
+                if (studentDTO != null) {
+                    count++;
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        lblNoOfStudent.setText(count + "");
+    }
+
+    // load all course name
+    void loadAllCourseCmb() {
+        try {
+            List<CourseDTO> allCourse = courseBO.getAllCourse();
+            for (CourseDTO dto : allCourse) {
+                cmbCourse.getItems().addAll(dto.getCourseName());
+                cmbCourseR.getItems().addAll(dto.getCourseName());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //    ************************ Home Tab End *****************************
+
+
     //    ************************  Student Detail Tab Start*****************************
     //load reg sid and student detail sid
     void loadID() {
         txtSIDR.setText(generateSID());
         lblSID1.setText(generateSID());
         lblCIDC.setText(generateCCode());
-        lblCID.setText(generateCCode());
 
     }
+
+    ObservableList<StudentTM> tmlistS;
 
     //load student detail tab table
     void loadAllStudent1() {
         try {
-            ObservableList<StudentTM> tmlist = FXCollections.observableArrayList();
+            tmlistS = FXCollections.observableArrayList();
             ArrayList<StudentDTO> list = studentBO.getAllStudent();
             for (StudentDTO dto : list) {
                 JFXButton btn = new JFXButton("Delete");
                 StudentTM tm = new StudentTM(dto.getID(), dto.getName(), dto.getAddress(), dto.getContactNo(), dto.getDob(), dto.getGender(), btn);
-                tmlist.add(tm);
+                tmlistS.add(tm);
                 btn.setOnAction((e) -> {
                     try {
                         ButtonType ok = new ButtonType("OK",
@@ -246,7 +419,7 @@ public class DashboardViewController {
 
                 });
             }
-            tblStudent.setItems(tmlist);
+            tblStudent.setItems(tmlistS);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -286,40 +459,112 @@ public class DashboardViewController {
     //student detail tab save
     public void btnSaveSOnAction(ActionEvent actionEvent) {
         try {
-            LocalDate value = dataPicker1.getValue();
-            Date dob1 = Date.valueOf(value);
-            boolean saved = studentBO.saveStudent(new StudentDTO(lblSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob1, getGender1()));
-            if (saved) {
-                loadID();
-                loadAllStudent1();
-                clearStudentDetailField();
-                setNoOfStudent();
-                new Alert(Alert.AlertType.CONFIRMATION, "Student Saved...!").show();
-            } else {
-                new Alert(Alert.AlertType.ERROR, "Failed...!").show();
 
+            if (Pattern.compile("^[A-z ]{1,}$").matcher(txtSName1.getText()).matches()) {
+                if (Pattern.compile("^[A-z, |0-9:./]*\\b$").matcher(txtAddr1.getText()).matches()) {
+                    if (Pattern.compile("^\\d{10}$").matcher(txtContact1.getText()).matches()) {
+                        if (dataPicker1.getValue() != null) {
+                            if (rbtnMale1.isSelected() || rbtnFemale1.isSelected()) {
+                                if (checkDuplicateSID()) {
+                                    LocalDate value = dataPicker1.getValue();
+                                    Date dob1 = Date.valueOf(value);
+                                    boolean saved = studentBO.saveStudent(new StudentDTO(lblSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob1, getGender1()));
+                                    if (saved) {
+                                        loadID();
+                                        loadAllStudent1();
+                                        clearStudentDetailField();
+                                        setNoOfStudent();
+                                        new Alert(Alert.AlertType.CONFIRMATION, "Student Saved...!").show();
+                                    } else {
+                                        new Alert(Alert.AlertType.ERROR, "Failed...!").show();
+                                    }
+                                } else {
+                                    new Alert(Alert.AlertType.ERROR, "This Student ID Already exsist!\n      Please use new Button for new student add\n or\nPlease use update Button for update student detail ").show();
+                                    btnNewCourse.requestFocus();
+                                }
+                            } else {
+                                new Alert(Alert.AlertType.ERROR, "Please Choose gender...!").show();
+                                rbtnMale1.requestFocus();
+                            }
+                        } else {
+                            new Alert(Alert.AlertType.ERROR, "Please Input Date of birth...!").show();
+                            dataPicker1.requestFocus();
+                        }
+                    } else {
+                        new Alert(Alert.AlertType.ERROR, "Check contact no field...\n(Use only 10 numbers for fill contact no...!)").show();
+                        txtContact1.requestFocus();
+                        txtContact1.setFocusColor(Paint.valueOf("red"));
+                    }
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Check address field...!)").show();
+                    txtAddr1.requestFocus();
+                    txtAddr1.setFocusColor(Paint.valueOf("red"));
+                }
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Please input student name...!").show();
+                txtSName1.setFocusColor(Paint.valueOf("red"));
+                txtSName1.requestFocus();
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
+
     }
 
     //student detail tab update
     public void btnUpdateSOnAction(ActionEvent actionEvent) {
         try {
-            LocalDate value = dataPicker1.getValue();
-            Date dob = Date.valueOf(value);
-            boolean updated = studentBO.updateStudent(new StudentDTO(lblSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob, getGender1()));
 
-            if (updated) {
-                loadID();
-                loadAllStudent1();
-                clearStudentDetailField();
-                new Alert(Alert.AlertType.CONFIRMATION, "Student Updated...!").show();
+            if (Pattern.compile("^[A-z ]{1,}$").matcher(txtSName1.getText()).matches()) {
+                if (Pattern.compile("^[A-z, |0-9:./]*\\b$").matcher(txtAddr1.getText()).matches()) {
+                    if (Pattern.compile("^\\d{10}$").matcher(txtContact1.getText()).matches()) {
+                        if (dataPicker1.getValue() != null) {
+                            if (rbtnMale1.isSelected() || rbtnFemale1.isSelected()) {
+                                ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.OK_DONE);
+                                ButtonType no = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are You Sure Update Course Detail? ", yes, no);
+                                Optional<ButtonType> result = alert.showAndWait();
+                                if (result.orElse(no) == yes) {
+                                    LocalDate value = dataPicker1.getValue();
+                                    Date dob1 = Date.valueOf(value);
+                                    boolean updated = studentBO.updateStudent(new StudentDTO(lblSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob1, getGender1()));
+                                    if (updated) {
+                                        loadID();
+                                        loadAllStudent1();
+                                        clearStudentDetailField();
+                                        setNoOfStudent();
+                                        new Alert(Alert.AlertType.CONFIRMATION, "Student Updated...!").show();
+                                    } else {
+                                        new Alert(Alert.AlertType.ERROR, "Failed...!").show();
+                                    }
+                                }
+                            } else {
+                                new Alert(Alert.AlertType.ERROR, "Please Choose gender...!").show();
+                                rbtnMale1.requestFocus();
+                            }
+                        } else {
+                            new Alert(Alert.AlertType.ERROR, "Please Input Date of birth...!").show();
+                            dataPicker1.requestFocus();
+                        }
+                    } else {
+                        new Alert(Alert.AlertType.ERROR, "Check contact no field...\n(Use only 10 numbers for fill contact no...!)").show();
+                        txtContact1.requestFocus();
+                        txtContact1.setFocusColor(Paint.valueOf("red"));
+                    }
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Check address field...!)").show();
+                    txtAddr1.requestFocus();
+                    txtAddr1.setFocusColor(Paint.valueOf("red"));
+                }
             } else {
-                new Alert(Alert.AlertType.ERROR, "Failed...!").show();
+                new Alert(Alert.AlertType.ERROR, "Please input student name...!").show();
+                txtSName1.setFocusColor(Paint.valueOf("red"));
+                txtSName1.requestFocus();
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
     }
@@ -340,39 +585,20 @@ public class DashboardViewController {
         lblSID1.setText(generateSID());
     }
 
+    private boolean checkDuplicateSID() {
+        for (StudentTM tm : tmlistS) {
+            if (lblSID1.getText().equals(tm.getID())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
     //    ************************  Student Detail Tab End *****************************
 
 
-    void setNoOfCourse() {
-        int count = 0;
-        try {
-            ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
-            for (CourseDTO courseDTO : allCourse) {
-                if (courseDTO != null) {
-                    count++;
-                }
-            }
-        } catch (Exception e) {
-
-        }
-        lblNoOfCourse.setText(count + "");
-
-    }
-
-    void setNoOfStudent() {
-        int count = 0;
-        try {
-            ArrayList<StudentDTO> allStudent = studentBO.getAllStudent();
-            for (StudentDTO studentDTO : allStudent) {
-                if (studentDTO != null) {
-                    count++;
-                }
-            }
-        } catch (Exception e) {
-
-        }
-        lblNoOfStudent.setText(count + "");
-    }
+    //    ************************  Course Detail Tab Start *****************************
 
     //genarate course code
     public String generateCCode() {
@@ -444,17 +670,17 @@ public class DashboardViewController {
         clearCourseDetailField();
     }
 
-    ObservableList<CourseTM> tmlist;
+    ObservableList<CourseTM> tmlistC;
 
     //load course detail tab table
     void loadAllCourseDetail() {
         try {
-            tmlist = FXCollections.observableArrayList();
+            tmlistC = FXCollections.observableArrayList();
             ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
             for (CourseDTO dto : allCourse) {
                 JFXButton btn = new JFXButton("Delete");
                 CourseTM tm = new CourseTM(dto.getCode(), dto.getCourseName(), dto.getType(), dto.getDuration(), dto.getFee(), btn);
-                tmlist.add(tm);
+                tmlistC.add(tm);
                 btn.setOnAction((e) -> {
                     try {
 
@@ -490,7 +716,7 @@ public class DashboardViewController {
             }
 
 
-            tblCourse.setItems(tmlist);
+            tblCourse.setItems(tmlistC);
 
         } catch (Exception e) {
 
@@ -506,11 +732,13 @@ public class DashboardViewController {
                         if (!cmbDurationType.getSelectionModel().isEmpty()) {
                             if (Pattern.compile("^[0-9.]{1,}$").matcher(txtFeeC.getText().trim()).matches()) {
                                 if (checkDuplicateCode()) {
-                                    boolean saveCourse = courseBO.saveCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getType(), (txtDurationC.getText() + " " + cmbDurationType.getValue()), Double.parseDouble(txtFeeC.getText().trim())));
+                                    boolean saveCourse = courseBO.saveCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getTypeR(), (txtDurationC.getText() + " " + cmbDurationType.getValue()), Double.parseDouble(txtFeeC.getText().trim())));
                                     if (saveCourse) {
                                         loadAllCourseDetail();
                                         generateCCode();
                                         clearCourseDetailField();
+                                        loadAllCourseCmb();
+
                                         new Alert(Alert.AlertType.CONFIRMATION, "Course Saved...!").show();
                                     } else {
                                         new Alert(Alert.AlertType.ERROR, "Failed...!").show();
@@ -520,7 +748,7 @@ public class DashboardViewController {
                                     btnNewCourse.requestFocus();
                                 }
                             } else {
-                                new Alert(Alert.AlertType.ERROR, "Check your Fee Field...\n(Use only numbers for fill Fee...!)").show();
+                                new Alert(Alert.AlertType.ERROR, "Check Fee Field...\n(Use only numbers for fill Fee...!)").show();
                                 txtFeeC.setFocusColor(Paint.valueOf("red"));
                                 txtFeeC.requestFocus();
 
@@ -531,7 +759,7 @@ public class DashboardViewController {
 
                         }
                     } else {
-                        new Alert(Alert.AlertType.ERROR, "Check your Duration Field...\n(Use only numbers for fill duration...!)").show();
+                        new Alert(Alert.AlertType.ERROR, "Check Duration Field...\n(Use only numbers for fill duration...!)").show();
                         txtDurationC.setFocusColor(Paint.valueOf("red"));
                         txtDurationC.requestFocus();
 
@@ -555,14 +783,16 @@ public class DashboardViewController {
         }
     }
 
+    //check duplicate course code
     private boolean checkDuplicateCode() {
-        for (CourseTM tm : tmlist) {
+        for (CourseTM tm : tmlistC) {
             if (lblCIDC.getText().equals(tm.getCode())) {
                 return false;
             }
         }
         return true;
     }
+
 
     private String getType() {
         if (rbtnFullTimeC.isSelected()) {
@@ -571,6 +801,7 @@ public class DashboardViewController {
             return "Part Time";
         }
     }
+
 
     public void btnUpdateOnActionC(ActionEvent actionEvent) {
         try {
@@ -590,6 +821,7 @@ public class DashboardViewController {
                                     if (updateCourse) {
                                         loadAllCourseDetail();
                                         generateCCode();
+                                        loadAllCourseCmb();
                                         clearCourseDetailField();
                                         new Alert(Alert.AlertType.CONFIRMATION, "Course Updated...!").show();
                                     } else {
@@ -638,4 +870,8 @@ public class DashboardViewController {
         System.out.println(s);
 
     }
+
+
+    //    ************************  Course Detail Tab End *****************************
+
 }

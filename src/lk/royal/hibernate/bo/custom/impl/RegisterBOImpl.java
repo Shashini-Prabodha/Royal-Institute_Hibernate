@@ -3,9 +3,16 @@ package lk.royal.hibernate.bo.custom.impl;
 import lk.royal.hibernate.bo.custom.RegisterBO;
 import lk.royal.hibernate.dao.DAOFactory;
 import lk.royal.hibernate.dao.DAOType;
+import lk.royal.hibernate.dao.custom.CourseDAO;
 import lk.royal.hibernate.dao.custom.RegisterDAO;
+import lk.royal.hibernate.dao.custom.StudentDAO;
+import lk.royal.hibernate.db.FactoryConfiguration;
 import lk.royal.hibernate.dto.RegistrationDTO;
+import lk.royal.hibernate.dto.StudentDTO;
+import lk.royal.hibernate.entity.Course;
 import lk.royal.hibernate.entity.Registration;
+import lk.royal.hibernate.entity.Student;
+import org.hibernate.Session;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +20,21 @@ import java.util.List;
 public class RegisterBOImpl implements RegisterBO {
 
     RegisterDAO registerDAO = DAOFactory.getInstance().getDAO(DAOType.REGISTER);
+   CourseDAO courseDAO = DAOFactory.getInstance().getDAO(DAOType.COURSE);
+    StudentDAO studentDAO = DAOFactory.getInstance().getDAO(DAOType.STUDENT);
 
     @Override
     public boolean saveRegister(RegistrationDTO dto) throws Exception {
-        return registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee()));
+        Session session = FactoryConfiguration.getInstance().getSession();
+
+        session.beginTransaction();
+
+        StudentDTO studentDTO = dto.getStudentDTO();
+        Student student = new Student(studentDTO.getID(), studentDTO.getName(), studentDTO.getAddress(), studentDTO.getContactNo(), studentDTO.getDob(), studentDTO.getGender());
+
+        Course course = courseDAO.get(dto.getCourse_code());
+        System.out.println(dto.getRegNo()+" "+dto.getRegDate()+" "+ dto.getRegFee()+" "+student.getID()+" "+course.getCode());
+        return registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(),student,course));
     }
 
     @Override

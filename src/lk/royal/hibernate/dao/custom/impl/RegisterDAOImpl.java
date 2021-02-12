@@ -108,9 +108,13 @@ public class RegisterDAOImpl implements RegisterDAO {
 
         Transaction transaction = session.beginTransaction();
         NativeQuery sqlQuery = session.createSQLQuery("select regNo from Registration order by regNo desc limit 1");
-        int id = (Integer)sqlQuery.uniqueResult();
-        transaction.commit();
-        session.close();
-        return id;
+        if (sqlQuery.uniqueResult() == null) {
+            return 0;
+        } else {
+            int id = (Integer) sqlQuery.uniqueResult();
+            transaction.commit();
+            session.close();
+            return id;
+        }
     }
 }

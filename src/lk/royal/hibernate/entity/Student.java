@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +19,7 @@ public class Student implements SuperEntity {
     private String gender;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
-    private List<Registration> registrations;
+    private List<Registration> registrations=new ArrayList<>();
 
     public Student() {
     }

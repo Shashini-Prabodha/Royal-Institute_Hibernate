@@ -66,4 +66,10 @@ public class CourseBOImpl implements CourseBO {
             }
         }
     }
+
+    @Override
+    public CourseDTO getCourseN(String name) throws Exception {
+        Course course = courseDAO.getCourseN(name);
+        return new CourseDTO(course.getCode(),course.getCourseName(),course.getType(),course.getDuration(),course.getFee());
+    }
 }

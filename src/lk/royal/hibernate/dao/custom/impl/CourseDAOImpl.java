@@ -2,6 +2,7 @@ package lk.royal.hibernate.dao.custom.impl;
 
 import lk.royal.hibernate.dao.custom.CourseDAO;
 import lk.royal.hibernate.db.FactoryConfiguration;
+import lk.royal.hibernate.dto.CourseDTO;
 import lk.royal.hibernate.entity.Course;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -117,5 +118,24 @@ public class CourseDAOImpl implements CourseDAO {
         transaction.commit();
         session.close();
         return id;
+    }
+
+    @Override
+    public Course getCourseN(String name) throws Exception {
+        Session session = FactoryConfiguration.getInstance().getSession();
+
+        Transaction transaction = session.beginTransaction();
+        try {
+
+            Query query = session.createQuery("from Course where courseName = ?1");
+            query.setParameter(1, name);
+            Course course = (Course) query.uniqueResult();
+            transaction.commit();
+            session.close();
+            return course;
+        } catch (Exception exception) {
+            transaction.rollback();
+        }
+        return null;
     }
 }

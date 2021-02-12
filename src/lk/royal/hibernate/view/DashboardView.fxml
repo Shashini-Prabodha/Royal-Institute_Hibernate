@@ -56,7 +56,7 @@
                                     </LinearGradient>
                                  </fill>
                               </Text>
-                              <JFXComboBox fx:id="cmbCourse1" labelFloat="true" layoutX="202.0" layoutY="91.0" onAction="#cmbCourseOnAction" prefHeight="31.0" prefWidth="396.0" promptText="Course Name" stylesheets="@../assests/style/style.css">
+                              <JFXComboBox fx:id="cmbCourse" editable="true" labelFloat="true" layoutX="202.0" layoutY="91.0" onAction="#cmbCourseOnAction" prefHeight="31.0" prefWidth="396.0" promptText="Course Name" stylesheets="@../assests/style/style.css">
                                  <styleClass>
                                     <String fx:value="cell" />
                                     <String fx:value="combo-box" />
@@ -241,9 +241,9 @@
                               </Label>
                            </children>
                         </Pane>
-                        <Pane layoutX="538.0" layoutY="74.0" prefHeight="425.0" prefWidth="457.0" style="-fx-background-radius: 50; -fx-border-radius: 25; -fx-border-color: #c9c9c9;">
+                        <Pane layoutX="538.0" layoutY="74.0" prefHeight="363.0" prefWidth="457.0" style="-fx-background-radius: 50; -fx-border-radius: 25; -fx-border-color: #c9c9c9;">
                            <children>
-                              <JFXTextField fx:id="txtDuration" labelFloat="true" layoutX="25.0" layoutY="252.0" prefHeight="32.0" prefWidth="403.0" promptText="Duration">
+                              <JFXTextField fx:id="txtDuration" labelFloat="true" layoutX="25.0" layoutY="240.0" prefHeight="32.0" prefWidth="403.0" promptText="Duration">
                                  <font>
                                     <Font name="Times New Roman" size="18.0" />
                                  </font>
@@ -262,7 +262,7 @@
                                     <Font name="Times New Roman Bold Italic" size="18.0" />
                                  </font>
                               </Label>
-                              <JFXComboBox fx:id="cmbCourse" labelFloat="true" layoutX="25.0" layoutY="102.0" onAction="#cmbCourseOnAction" prefHeight="31.0" prefWidth="396.0" promptText="Course Name" stylesheets="@../assests/style/style.css">
+                              <JFXComboBox fx:id="cmbCourseR" editable="true" labelFloat="true" layoutX="25.0" layoutY="102.0" onAction="#cmbCourseROnAction" prefHeight="31.0" prefWidth="396.0" promptText="Course Name" stylesheets="@../assests/style/style.css">
                                  <styleClass>
                                     <String fx:value="cell" />
                                     <String fx:value="combo-box" />
@@ -293,7 +293,7 @@
                                     <Font name="Times New Roman" size="18.0" />
                                  </font>
                               </Label>
-                              <JFXTextField fx:id="txtFee" labelFloat="true" layoutX="25.0" layoutY="330.0" prefHeight="32.0" prefWidth="403.0" promptText="Fee (Rs.)">
+                              <JFXTextField fx:id="txtFee" labelFloat="true" layoutX="25.0" layoutY="311.0" prefHeight="32.0" prefWidth="403.0" promptText="Fee (Rs.)">
                                  <font>
                                     <Font name="Times New Roman" size="18.0" />
                                  </font>
@@ -315,6 +315,20 @@
                               </RadialGradient>
                            </ripplerFill>
                         </JFXButton>
+                        <Pane layoutX="541.0" layoutY="443.0" prefHeight="78.0" prefWidth="457.0" style="-fx-background-radius: 50; -fx-border-radius: 25; -fx-border-color: #c9c9c9;">
+                           <children>
+                              <Label fx:id="lblCID1" layoutX="367.0" layoutY="13.0" prefHeight="45.0" prefWidth="70.0">
+                                 <font>
+                                    <Font name="Times New Roman Bold Italic" size="18.0" />
+                                 </font>
+                              </Label>
+                              <JFXTextField fx:id="txtRegFee" labelFloat="true" layoutX="23.0" layoutY="22.0" prefHeight="32.0" prefWidth="403.0" promptText="Registration Fee (Rs.)">
+                                 <font>
+                                    <Font name="Times New Roman" size="18.0" />
+                                 </font>
+                              </JFXTextField>
+                           </children>
+                        </Pane>
                      </children>
                   </AnchorPane>
             </content>

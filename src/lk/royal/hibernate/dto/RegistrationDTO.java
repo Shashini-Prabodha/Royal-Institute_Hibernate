@@ -6,17 +6,17 @@ public class RegistrationDTO {
     private int regNo;
     private Date regDate;
     private double regFee;
-    private String Studet_ID;
+    private StudentDTO studentDTO;
     private String Course_code;
 
     public RegistrationDTO(int regNo, Date regDate, double regFee) {
     }
 
-    public RegistrationDTO(int regNo, Date regDate, double regFee, String studet_ID, String course_code) {
+    public RegistrationDTO(int regNo, Date regDate, double regFee, StudentDTO studentDTO, String course_code) {
         this.regNo = regNo;
         this.regDate = regDate;
         this.regFee = regFee;
-        Studet_ID = studet_ID;
+        this.studentDTO= studentDTO;
         Course_code = course_code;
     }
 
@@ -44,12 +44,12 @@ public class RegistrationDTO {
         this.regFee = regFee;
     }
 
-    public String getStudet_ID() {
-        return Studet_ID;
+    public StudentDTO getStudentDTO() {
+        return studentDTO;
     }
 
-    public void setStudet_ID(String studet_ID) {
-        Studet_ID = studet_ID;
+    public void setStudentDTO(StudentDTO studentDTO) {
+        this.studentDTO = studentDTO;
     }
 
     public String getCourse_code() {
@@ -66,9 +66,8 @@ public class RegistrationDTO {
                 "regNo=" + regNo +
                 ", regDate=" + regDate +
                 ", regFee=" + regFee +
-                ", Studet_ID='" + Studet_ID + '\'' +
+                ", studentDTO=" + studentDTO +
                 ", Course_code='" + Course_code + '\'' +
                 '}';
     }
-
 }
