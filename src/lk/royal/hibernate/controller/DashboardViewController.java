@@ -388,15 +388,31 @@ public class DashboardViewController {
     //set Course detail tab data to click table
     private void setDataCourse(CourseTM tm) {
         try {
+            String duration = tm.getDuration();
+
             lblCIDC.setText(tm.getCode());
             txtCourseNameC.setText(tm.getCourseName());
-            txtDurationC.setText(tm.getCode());
+            txtDurationC.setText(duration.substring(0, 2));
             txtFeeC.setText(tm.getFee() + "");
             if (tm.getType().equals("Part Time")) {
                 rbtnPartTimeC.setSelected(true);
             } else {
                 rbtnFullTimeC.setSelected(true);
             }
+            String d = null;
+            if (duration.contains("Year")) {
+                d = "Year";
+            } else if (duration.contains("Month")) {
+                d = "Month";
+            } else if (duration.contains("Week")) {
+                d = "Week";
+            } else {
+                d = "Day";
+            }
+
+            System.out.println("cmb " + d);
+            cmbDurationType.setValue(d);
+
         } catch (NullPointerException e) {
 
         }
@@ -411,25 +427,29 @@ public class DashboardViewController {
         rbtnPartTimeC.setSelected(false);
         rbtnFullTimeC.setSelected(false);
         lblCIDC.setText(generateCCode());
-        cmbDurationType.getItems().clear();
+        cmbDurationType.getSelectionModel().clearSelection();
+
     }
 
     void loadDurationTypes() {
-        cmbDurationType.getItems().addAll("Year");
-        cmbDurationType.getItems().addAll("Month");
-        cmbDurationType.getItems().addAll("Week");
-        cmbDurationType.getItems().addAll("Day");
+        cmbDurationType.getItems().add("Year");
+        cmbDurationType.getItems().add("Month");
+        cmbDurationType.getItems().add("Week");
+        cmbDurationType.getItems().add("Day");
     }
 
     @FXML
     void btnNewCourseOnAction(ActionEvent event) {
+
         clearCourseDetailField();
     }
+
+    ObservableList<CourseTM> tmlist;
 
     //load course detail tab table
     void loadAllCourseDetail() {
         try {
-            ObservableList<CourseTM> tmlist = FXCollections.observableArrayList();
+            tmlist = FXCollections.observableArrayList();
             ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
             for (CourseDTO dto : allCourse) {
                 JFXButton btn = new JFXButton("Delete");
@@ -485,16 +505,19 @@ public class DashboardViewController {
                     if (Pattern.compile("^[1-9.]{1,}$").matcher(txtDurationC.getText().trim()).matches()) {
                         if (!cmbDurationType.getSelectionModel().isEmpty()) {
                             if (Pattern.compile("^[0-9.]{1,}$").matcher(txtFeeC.getText().trim()).matches()) {
-
-                                boolean saveCourse = courseBO.saveCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getType(), (txtDurationC.getText() + " " + cmbDurationType.getSelectionModel().toString()), Double.parseDouble(txtFeeC.getText().trim())));
-                                if (saveCourse){
-                                    loadAllCourseDetail();
-                                    generateCCode();
-                                    clearCourseDetailField();
-                                    new Alert(Alert.AlertType.CONFIRMATION, "Course Saved...!").show();
+                                if (checkDuplicateCode()) {
+                                    boolean saveCourse = courseBO.saveCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getType(), (txtDurationC.getText() + " " + cmbDurationType.getValue()), Double.parseDouble(txtFeeC.getText().trim())));
+                                    if (saveCourse) {
+                                        loadAllCourseDetail();
+                                        generateCCode();
+                                        clearCourseDetailField();
+                                        new Alert(Alert.AlertType.CONFIRMATION, "Course Saved...!").show();
+                                    } else {
+                                        new Alert(Alert.AlertType.ERROR, "Failed...!").show();
+                                    }
                                 } else {
-                                    new Alert(Alert.AlertType.ERROR, "Failed...!").show();
-
+                                    new Alert(Alert.AlertType.ERROR, "This Course ID Already exsist!\n      Please use new Button for new course\n or\nPlease use update Button for update course ").show();
+                                    btnNewCourse.requestFocus();
                                 }
                             } else {
                                 new Alert(Alert.AlertType.ERROR, "Check your Fee Field...\n(Use only numbers for fill Fee...!)").show();
@@ -520,7 +543,7 @@ public class DashboardViewController {
 
                 }
 
-            }else {
+            } else {
                 new Alert(Alert.AlertType.ERROR, "Please input course name...!").show();
                 txtCourseNameC.setFocusColor(Paint.valueOf("red"));
                 txtCourseNameC.requestFocus();
@@ -532,16 +555,82 @@ public class DashboardViewController {
         }
     }
 
+    private boolean checkDuplicateCode() {
+        for (CourseTM tm : tmlist) {
+            if (lblCIDC.getText().equals(tm.getCode())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private String getType() {
         if (rbtnFullTimeC.isSelected()) {
             return "Full Time";
         } else {
             return "Part Time";
-
         }
     }
 
     public void btnUpdateOnActionC(ActionEvent actionEvent) {
+        try {
+            if (Pattern.compile("^[A-z ]{1,}$").matcher(txtCourseNameC.getText()).matches()) {
+                if (rbtnPartTimeC.isSelected() || rbtnFullTimeC.isSelected()) {
+                    if (Pattern.compile("^[1-9.]{1,}$").matcher(txtDurationC.getText().trim()).matches()) {
+                        if (!cmbDurationType.getSelectionModel().isEmpty()) {
+                            if (Pattern.compile("^[0-9.]{1,}$").matcher(txtFeeC.getText().trim()).matches()) {
+
+                                ButtonType yes = new ButtonType("Yes", ButtonBar.ButtonData.OK_DONE);
+                                ButtonType no = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are You Sure Update Course Detail? ", yes, no);
+                                Optional<ButtonType> result = alert.showAndWait();
+                                if (result.orElse(no) == yes) {
+                                    boolean updateCourse = courseBO.updateCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getType(), (txtDurationC.getText() + " " + cmbDurationType.getValue()), Double.parseDouble(txtFeeC.getText().trim())));
+                                    if (updateCourse) {
+                                        loadAllCourseDetail();
+                                        generateCCode();
+                                        clearCourseDetailField();
+                                        new Alert(Alert.AlertType.CONFIRMATION, "Course Updated...!").show();
+                                    } else {
+                                        new Alert(Alert.AlertType.ERROR, "Failed...!").show();
+                                    }
+                                }
+
+                            } else {
+                                new Alert(Alert.AlertType.ERROR, "This Course ID Already exsist!\n      Please use new Button for new course\n or\nPlease use update Button for update course ").show();
+                                txtFeeC.setFocusColor(Paint.valueOf("red"));
+                                txtFeeC.requestFocus();
+
+                            }
+                        } else {
+                            cmbDurationType.setFocusColor(Paint.valueOf("red"));
+                            cmbDurationType.requestFocus();
+
+                        }
+                    } else {
+                        new Alert(Alert.AlertType.ERROR, "Check your Duration Field...\n(Use only numbers for fill duration...!)").show();
+                        txtDurationC.setFocusColor(Paint.valueOf("red"));
+                        txtDurationC.requestFocus();
+
+                    }
+                } else {
+                    new Alert(Alert.AlertType.ERROR, "Please Choose course type...!").show();
+                    rbtnFullTimeC.requestFocus();
+                    rbtnPartTimeC.requestFocus();
+
+                }
+
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Please input course name...!").show();
+                txtCourseNameC.setFocusColor(Paint.valueOf("red"));
+                txtCourseNameC.requestFocus();
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void cmbDurationTypeOnAction(ActionEvent actionEvent) {

@@ -4,7 +4,7 @@
     <facet type="hibernate" name="Hibernate">
       <configuration>
         <datasource-map>
-          <unit-entry name="hibernate.cfg.xml" />
+          <unit-entry name="hibernate.cfg.xml" value="84f24b71-d84d-4884-9cce-cb40d971582d" />
           <unit-entry name="lk:royal:hibernate:hibernate.cfg.xml" />
         </datasource-map>
         <naming-strategy-map />
@@ -15,7 +15,7 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <datasource-mapping>
-          <factory-entry name="Royal-Institute-master" />
+          <factory-entry name="Royal-Institute-master" value="8886a571-518e-4667-8447-762be09062a6" />
         </datasource-mapping>
         <naming-strategy-map />
       </configuration>

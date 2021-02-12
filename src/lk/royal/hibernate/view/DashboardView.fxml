@@ -74,12 +74,11 @@
                               <TableView fx:id="tblStudentCWise" layoutX="33.0" layoutY="140.0" prefHeight="206.0" prefWidth="930.0" styleClass="cell" stylesheets="@../assests/style/newTableStyles.css">
                                  <columns>
                                     <TableColumn fx:id="colSID1" prefWidth="75.0" text="ID" />
-                                    <TableColumn fx:id="colSName1" prefWidth="154.0" text="Name" />
-                                    <TableColumn fx:id="colAddress1" prefWidth="156.0" text="Address" />
-                                    <TableColumn fx:id="colContact1" prefWidth="131.0" text="Contact No" />
-                                    <TableColumn fx:id="colDOB1" prefWidth="154.0" text="DOB" />
-                                    <TableColumn fx:id="colGender1" prefWidth="114.0" text="Gender" />
-                                    <TableColumn fx:id="colDeleteS1" prefWidth="144.0" text="Delete" />
+                                    <TableColumn fx:id="colSName1" prefWidth="176.0" text="Name" />
+                                    <TableColumn fx:id="colAddress1" prefWidth="235.0" text="Address" />
+                                    <TableColumn fx:id="colContact1" prefWidth="162.0" text="Contact No" />
+                                    <TableColumn fx:id="colDOB1" prefWidth="139.0" text="DOB" />
+                                    <TableColumn fx:id="colGender1" prefWidth="141.0" text="Gender" />
                                  </columns>
                               </TableView>
                            </children>
@@ -387,7 +386,7 @@
                                     <Font name="Times New Roman" size="18.0" />
                                  </font>
                               </Label>
-                              <JFXTextField fx:id="txtFeeC" labelFloat="true" layoutX="25.0" layoutY="322.0" prefHeight="32.0" prefWidth="356.0" promptText="Fee (Rs.)">
+                              <JFXTextField fx:id="txtFeeC" labelFloat="true" layoutX="25.0" layoutY="322.0" prefHeight="32.0" prefWidth="367.0" promptText="Fee (Rs.)">
                                  <font>
                                     <Font name="Times New Roman" size="18.0" />
                                  </font>
@@ -406,7 +405,7 @@
                                     </ImageView>
                                  </graphic>
                               </JFXButton>
-                              <JFXComboBox fx:id="cmbDurationType" editable="true" layoutX="255.0" layoutY="245.0" onAction="#cmbDurationTypeOnAction" prefHeight="32.0" prefWidth="126.0" visibleRowCount="4" />
+                              <JFXComboBox fx:id="cmbDurationType" editable="true" layoutX="255.0" layoutY="245.0" onAction="#cmbDurationTypeOnAction" prefHeight="32.0" prefWidth="136.0" promptText="Duration Type" visibleRowCount="4" />
                            </children>
                         </Pane>
                         <Text layoutX="386.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Course Details" underline="true">
