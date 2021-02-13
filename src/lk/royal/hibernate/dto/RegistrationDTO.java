@@ -1,23 +1,24 @@
 package lk.royal.hibernate.dto;
 
 import java.sql.Date;
+import java.util.List;
 
 public class RegistrationDTO {
     private int regNo;
     private Date regDate;
     private double regFee;
     private StudentDTO studentDTO;
-    private String Course_code;
+    private List<CourseDTO> Course_list;
 
     public RegistrationDTO(int regNo, Date regDate, double regFee) {
     }
 
-    public RegistrationDTO(int regNo, Date regDate, double regFee, StudentDTO studentDTO, String course_code) {
+    public RegistrationDTO(int regNo, Date regDate, double regFee, StudentDTO studentDTO, List<CourseDTO> course_list) {
         this.regNo = regNo;
         this.regDate = regDate;
         this.regFee = regFee;
-        this.studentDTO= studentDTO;
-        Course_code = course_code;
+        this.studentDTO = studentDTO;
+        Course_list = course_list;
     }
 
     public int getRegNo() {
@@ -52,12 +53,12 @@ public class RegistrationDTO {
         this.studentDTO = studentDTO;
     }
 
-    public String getCourse_code() {
-        return Course_code;
+    public List<CourseDTO> getCourse_list() {
+        return Course_list;
     }
 
-    public void setCourse_code(String course_code) {
-        Course_code = course_code;
+    public void setCourse_list(List<CourseDTO> course_code) {
+        Course_list = course_code;
     }
 
     @Override
@@ -67,7 +68,7 @@ public class RegistrationDTO {
                 ", regDate=" + regDate +
                 ", regFee=" + regFee +
                 ", studentDTO=" + studentDTO +
-                ", Course_code='" + Course_code + '\'' +
+                ", Course_code=" + Course_list +
                 '}';
     }
 }

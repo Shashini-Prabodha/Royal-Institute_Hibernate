@@ -2,6 +2,7 @@ package lk.royal.hibernate.entity;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 public class Registration implements SuperEntity{
@@ -15,9 +16,9 @@ public class Registration implements SuperEntity{
 //    @JoinColumn(name = "Student_ID", referencedColumnName = "ID" , insertable = false , updatable = false)
     private Student student;
 
-    @ManyToOne
+    @ManyToMany
 //    @JoinColumn(name = "Course_code", referencedColumnName = "code" , insertable = false , updatable = false)
-    private Course course;
+    private List<Course> course;
 
     public Registration() {
     }
@@ -28,13 +29,14 @@ public class Registration implements SuperEntity{
         this.regFee = regFee;
     }
 
-    public Registration(int regNo, Date regDate, double regFee, Student student, Course course) {
+    public Registration(int regNo, Date regDate, double regFee, Student student, List<Course> course) {
         this.regNo = regNo;
         this.regDate = regDate;
         this.regFee = regFee;
         this.student = student;
         this.course = course;
     }
+
 
     public int getRegNo() {
         return regNo;
@@ -68,11 +70,18 @@ public class Registration implements SuperEntity{
         this.student = student;
     }
 
-    public Course getCourse() {
-        return course;
+    public void setCourse(List<Course> course) {
+        this.course = course;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    @Override
+    public String toString() {
+        return "Registration{" +
+                "regNo=" + regNo +
+                ", regDate=" + regDate +
+                ", regFee=" + regFee +
+                ", student=" + student +
+                ", course=" + course +
+                '}';
     }
 }

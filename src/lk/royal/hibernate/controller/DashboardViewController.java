@@ -5,14 +5,21 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
+import javafx.animation.RotateTransition;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 import lk.royal.hibernate.bo.BOFactory;
 import lk.royal.hibernate.bo.BOType;
 import lk.royal.hibernate.bo.custom.CourseBO;
@@ -35,6 +42,9 @@ import java.util.regex.Pattern;
 public class DashboardViewController {
 
 
+    public ImageView logo;
+    public JFXButton btnSearchStudent;
+    public JFXButton btnRefresh;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -57,6 +67,12 @@ public class DashboardViewController {
     private JFXRadioButton rbtnPartTime, rbtnFullTime;
     @FXML
     private JFXButton btnReg, btnSearchStudentR;
+
+    public JFXButton btnAddtoCourse;
+    public JFXButton btnNewStudent;
+    public Text lblTot;
+    public TableView<CourseTM> tblCourse1;
+    public TableColumn colCode1, colCName1, colType1, colDurationC1, colFeeC1, colDeleteC1;
 
 
     @FXML
@@ -86,11 +102,9 @@ public class DashboardViewController {
     @FXML
     private TableColumn colSID, colSName, colAddress, colContact, colDOB, colGender, colDeleteS;
     @FXML
-    private JFXTextField txtSName1, txtAddr1, txtContact1;
+    private JFXTextField txtSName1, txtAddr1, txtContact1, txtSID1;
     @FXML
     private JFXDatePicker dataPicker1;
-    @FXML
-    private Label lblSID1;
     @FXML
     private ToggleGroup groupGender1;
     @FXML
@@ -125,7 +139,19 @@ public class DashboardViewController {
         loadDurationTypes();
         loadAllCourseDetail();
         loadAllCourseCmb();
+        loadAllCourseCmbH();
         genarateRegNo();
+
+        //set reg course detail tab table col
+        colCode1.setCellValueFactory(new PropertyValueFactory<>("code"));
+        colCName1.setCellValueFactory(new PropertyValueFactory<>("courseName"));
+        colType1.setCellValueFactory(new PropertyValueFactory<>("type"));
+        colDurationC1.setCellValueFactory(new PropertyValueFactory<>("duration"));
+        colFeeC1.setCellValueFactory(new PropertyValueFactory<>("fee"));
+        colDeleteC1.setCellValueFactory(new PropertyValueFactory<>("btn"));
+
+        //set reg course detail tab table col click
+
 
         //set course detail tab table col
         colCode.setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -157,8 +183,26 @@ public class DashboardViewController {
             setDataStudent(newValue);
         });
 
+        listaddC.addListener((ListChangeListener.Change<? extends CourseTM> c) -> {
+            double fee = 0;
+            for (CourseTM tm : listaddC) {
+                fee += Double.parseDouble(String.valueOf(tm.getFee()));
+            }
+            double regFee = Double.parseDouble(txtRegFee.getText());
+            lblTot.setText(String.valueOf(fee + regFee));
+        });
     }
 
+//    void rotateAnimation() {
+//        RotateTransition transition = new RotateTransition();
+//        transition.setAxis(Rotate.Y_AXIS);
+//        transition.setByAngle(360);
+//        transition.setCycleCount(500);
+//        transition.setDuration(Duration.seconds(30));
+//        transition.setAutoReverse(true);
+//        transition.setNode(logo);
+//        transition.play();
+//    }
 
     @FXML
     void btnOffOnAction(ActionEvent event) {
@@ -175,39 +219,45 @@ public class DashboardViewController {
                     if (Pattern.compile("^\\d{10}$").matcher(txtContact.getText()).matches()) {
                         if (dataPicker.getValue() != null) {
                             if (rbtnMale.isSelected() || rbtnFemale.isSelected()) {
-                                if (!cmbCourseR.getSelectionModel().isEmpty()) {
+
                                     if (Pattern.compile("^[0-9.]{1,}$").matcher(txtRegFee.getText().trim()).matches()) {
+                                        if (tblCourse1.getItems().size()>0) {
 
-                                        LocalDate value = dataPicker.getValue();
-                                        Date dob1 = Date.valueOf(value);
+                                            LocalDate value = dataPicker.getValue();
+                                            Date dob1 = Date.valueOf(value);
 
-                                        StudentDTO studentDTO = new StudentDTO(txtSIDR.getText(), txtSName.getText(), txtAddr.getText(), Integer.parseInt(txtContact.getText()), dob1, getGender());
-                                        CourseDTO courseDTO = new CourseDTO(lblCID.getText(), (String) cmbCourseR.getValue(), getTypeR(), txtDuration.getText(), Double.parseDouble(txtFee.getText().trim()));
+                                            StudentDTO studentDTO = new StudentDTO(txtSIDR.getText(), txtSName.getText(), txtAddr.getText(), Integer.parseInt(txtContact.getText()), dob1, getGender());
+                                            List<CourseDTO> courseDTOList = new ArrayList<>();
+                                            for (CourseTM tm : listaddC) {
+                                                CourseDTO courseDTO = new CourseDTO(tm.getCode(), tm.getCourseName(), tm.getType(), tm.getDuration(), tm.getFee());
+                                                courseDTOList.add(courseDTO);
+                                            }
 
-                                        RegistrationDTO registrationDTO = new RegistrationDTO(Integer.parseInt(lblRegNo.getText()), date, Double.parseDouble(txtRegFee.getText()),studentDTO,courseDTO.getCode());
+                                            RegistrationDTO registrationDTO = new RegistrationDTO(Integer.parseInt(lblRegNo.getText()), date, Double.parseDouble(txtRegFee.getText()), studentDTO, courseDTOList);
 
 //                                        boolean saved = studentBO.saveStudent(studentDTO);
-                                        boolean register = registerBO.saveRegister(registrationDTO);
-                                        if ( register) {
-                                            loadID();
-                                            loadAllStudent1();
-                                            clearStudentDetailField();
-                                            setNoOfStudent();
-                                            genarateRegNo();
-                                            new Alert(Alert.AlertType.CONFIRMATION, "Student Register...!").show();
+                                            boolean register = registerBO.saveRegister(registrationDTO);
+                                            if (register) {
+                                                loadID();
+                                                loadAllStudent1();
+                                                clearCourse();
+                                                clearAll();
+                                                setNoOfStudent();
+                                                genarateRegNo();
+                                                new Alert(Alert.AlertType.CONFIRMATION, "Student Register...!").show();
+                                            } else {
+                                                new Alert(Alert.AlertType.ERROR, "Registration failed...!").show();
+                                            }
                                         } else {
-                                            new Alert(Alert.AlertType.ERROR, "Registration failed...!").show();
+                                            new Alert(Alert.AlertType.ERROR, "Please add course ").show();
+                                            cmbCourseR.requestFocus();
+                                            cmbCourseR.setFocusColor(Paint.valueOf("red"));
                                         }
                                     } else {
                                         new Alert(Alert.AlertType.ERROR, "Check Registration Fee Field...\n(Use only numbers for fill Fee...!)").show();
                                         txtRegFee.setFocusColor(Paint.valueOf("red"));
                                         txtRegFee.requestFocus();
                                     }
-                                } else {
-                                    new Alert(Alert.AlertType.ERROR, "Please choose course ").show();
-                                    cmbCourseR.requestFocus();
-                                    cmbCourseR.setFocusColor(Paint.valueOf("red"));
-                                }
                             } else {
                                 new Alert(Alert.AlertType.ERROR, "Please Choose gender...!").show();
                                 rbtnMale.requestFocus();
@@ -238,21 +288,42 @@ public class DashboardViewController {
 
     }
 
+    private void clearAll() {
+        txtSName1.clear();
+        txtContact1.clear();
+        txtAddr1.clear();
+        dataPicker1.setValue(null);
+        rbtnFemale1.setSelected(false);
+        rbtnMale1.setSelected(false);
+        txtSID1.setText(generateSID());
+        listaddC.clear();
+        tblCourse1.refresh();
+    }
 
     public void cmbCourseROnAction(ActionEvent actionEvent) {
         try {
             String cname = (String) cmbCourseR.getValue();
-            CourseDTO courseN = courseBO.getCourseN(cname);
-            lblCID.setText(courseN.getCode());
-            txtDuration.setText(courseN.getDuration());
-            txtFee.setText(courseN.getFee() + "");
-            if (courseN.getType().equals("Part Time")) {
-                rbtnPartTime.setSelected(true);
-            } else {
-                rbtnFullTime.setSelected(true);
+            System.out.println("NAme" + cname);
+            if (cname != null) {
+                System.out.println("in" + cname);
+
+                CourseDTO courseN = courseBO.getCourseN(cname);
+                try {
+                    lblCID.setText(courseN.getCode());
+                    txtDuration.setText(courseN.getDuration());
+                    txtFee.setText(courseN.getFee() + "");
+                    if (courseN.getType().equals("Part Time")) {
+                        rbtnPartTime.setSelected(true);
+                    } else {
+                        rbtnFullTime.setSelected(true);
+                    }
+                } catch (NullPointerException e) {
+                }
+
+
+                txtRegFee.requestFocus();
+                txtRegFee.setFocusColor(Paint.valueOf("red"));
             }
-            txtRegFee.requestFocus();
-            txtRegFee.setFocusColor(Paint.valueOf("red"));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -262,7 +333,7 @@ public class DashboardViewController {
     //set new reg no
     void genarateRegNo() {
         try {
-            lblRegNo.setText(registerBO.newRegNo()+ "");
+            lblRegNo.setText(registerBO.newRegNo() + "");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -285,6 +356,109 @@ public class DashboardViewController {
         } else {
             return "Part Time";
         }
+    }
+
+
+    // load all course name
+    void loadAllCourseCmbR() {
+
+        try {
+            ObservableList<String> cmbCourseRItems = cmbCourseR.getItems();
+
+            if (!cmbCourseRItems.isEmpty()) {
+                ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
+                for (int i = 0; i < allCourse.size(); i++) {
+                    for (int j = 0; j < tblCourse1.getItems().size(); j++) {
+                        if (allCourse.get(i).getCode().equals(listaddC.get(j).getCode())) {
+                            CourseDTO course = courseBO.getCourse(listaddC.get(j).getCode());
+                            cmbCourseRItems.remove(course.getCourseName());
+                        }
+                    }
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    ObservableList<CourseTM> listaddC = FXCollections.observableArrayList();
+
+    public void btnAddtoCourseOnAction(ActionEvent actionEvent) {
+        try {
+            if (!cmbCourseR.getSelectionModel().isEmpty()) {
+                JFXButton btn = new JFXButton("Remove");
+                CourseDTO dto = courseBO.getCourse(lblCID.getText());
+                CourseTM tm = new CourseTM(dto.getCode(), dto.getCourseName(), dto.getType(), dto.getDuration(), dto.getFee(), btn);
+
+                listaddC.add(tm);
+                tblCourse1.setItems(listaddC);
+                getTotalFee();
+                tblCourse1.refresh();
+                loadAllCourseCmbR();
+                loadAllCourseCmb();
+                clearCourse();
+                btn.setOnAction((e) -> {
+                    try {
+
+                        ButtonType ok = new ButtonType("OK",
+                                ButtonBar.ButtonData.OK_DONE);
+                        ButtonType no = new ButtonType("NO",
+                                ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                                "Are You Sure ?", ok, no);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.orElse(no) == ok) {
+//
+//                       if (courseBO.deleteCourse(tm.getCode())) {
+//                           new Alert(Alert.AlertType.CONFIRMATION,
+//                                   "Deleted", ButtonType.OK).show();
+//                           loadAllCourseDetail();
+//                           clearCourseDetailField();
+//                           return;
+//                       }
+//                       new Alert(Alert.AlertType.WARNING,
+//                               "Try Again", ButtonType.OK).show();
+
+                            int index = tblCourse1.getSelectionModel().getFocusedIndex();
+                            listaddC.remove(index);
+                            tblCourse1.refresh();
+
+                        } else {
+                            //no
+                        }
+
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+
+                });
+            } else {
+                new Alert(Alert.AlertType.WARNING, "Choose course...", ButtonType.OK).show();
+                cmbCourseR.requestFocus();
+                cmbCourseR.setFocusColor(Paint.valueOf("red"));
+
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    private void clearCourse() {
+        txtDuration.clear();
+        txtFee.clear();
+        rbtnPartTime.setSelected(false);
+        rbtnFullTime.setSelected(false);
+        lblCID.setText("");
+        cmbCourseR.getSelectionModel().clearSelection();
+    }
+
+    static double total = 0.0;
+
+    private void getTotalFee() {
+
     }
 
     @FXML
@@ -312,6 +486,33 @@ public class DashboardViewController {
 
 
     public void btnSearchStudentROnAction(ActionEvent actionEvent) {
+        String sid = txtSIDR.getText();
+        try {
+            StudentDTO s = studentBO.getStudent(sid);
+            System.out.println(s + "s");
+            if (s == null) {
+                new Alert(Alert.AlertType.CONFIRMATION, "Can't find this student...\nPlease use new button for register new stuednt").show();
+                btnNewStudent.requestFocus();
+            } else {
+                Date date = s.getDob();
+                txtSIDR.setText(s.getID());
+                txtSName.setText(s.getName());
+                txtAddr.setText(s.getAddress());
+                txtContact.setText(s.getContactNo() + "");
+                dataPicker.setValue(date.toLocalDate());
+                if (s.getGender().equals("Male")) {
+                    rbtnMale.setSelected(true);
+                } else {
+                    rbtnFemale.setSelected(true);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void btnNewStudentOnAction(ActionEvent actionEvent) {
     }
 
 
@@ -350,12 +551,24 @@ public class DashboardViewController {
         lblNoOfStudent.setText(count + "");
     }
 
+    // load all course name home
+    void loadAllCourseCmbH() {
+        try {
+            List<CourseDTO> allCourse = courseBO.getAllCourse();
+            for (CourseDTO dto : allCourse) {
+                cmbCourse.getItems().addAll(dto.getCourseName());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     // load all course name
     void loadAllCourseCmb() {
         try {
             List<CourseDTO> allCourse = courseBO.getAllCourse();
             for (CourseDTO dto : allCourse) {
-                cmbCourse.getItems().addAll(dto.getCourseName());
                 cmbCourseR.getItems().addAll(dto.getCourseName());
             }
 
@@ -372,7 +585,7 @@ public class DashboardViewController {
     //load reg sid and student detail sid
     void loadID() {
         txtSIDR.setText(generateSID());
-        lblSID1.setText(generateSID());
+        txtSID1.setText(generateSID());
         lblCIDC.setText(generateCCode());
 
     }
@@ -430,7 +643,7 @@ public class DashboardViewController {
     private void setDataStudent(StudentTM tm) {
         try {
             Date date = tm.getDob();
-            lblSID1.setText(tm.getID());
+            txtSID1.setText(tm.getID());
             txtSName1.setText(tm.getName());
             txtAddr1.setText(tm.getAddress());
             txtContact1.setText(tm.getContactNo() + "");
@@ -468,7 +681,7 @@ public class DashboardViewController {
                                 if (checkDuplicateSID()) {
                                     LocalDate value = dataPicker1.getValue();
                                     Date dob1 = Date.valueOf(value);
-                                    boolean saved = studentBO.saveStudent(new StudentDTO(lblSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob1, getGender1()));
+                                    boolean saved = studentBO.saveStudent(new StudentDTO(txtSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob1, getGender1()));
                                     if (saved) {
                                         loadID();
                                         loadAllStudent1();
@@ -512,6 +725,7 @@ public class DashboardViewController {
 
     }
 
+
     //student detail tab update
     public void btnUpdateSOnAction(ActionEvent actionEvent) {
         try {
@@ -529,7 +743,7 @@ public class DashboardViewController {
                                 if (result.orElse(no) == yes) {
                                     LocalDate value = dataPicker1.getValue();
                                     Date dob1 = Date.valueOf(value);
-                                    boolean updated = studentBO.updateStudent(new StudentDTO(lblSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob1, getGender1()));
+                                    boolean updated = studentBO.updateStudent(new StudentDTO(txtSID1.getText(), txtSName1.getText(), txtAddr1.getText(), Integer.parseInt(txtContact1.getText()), dob1, getGender1()));
                                     if (updated) {
                                         loadID();
                                         loadAllStudent1();
@@ -582,12 +796,12 @@ public class DashboardViewController {
         dataPicker1.setValue(null);
         rbtnFemale1.setSelected(false);
         rbtnMale1.setSelected(false);
-        lblSID1.setText(generateSID());
+        txtSID1.setText(generateSID());
     }
 
     private boolean checkDuplicateSID() {
         for (StudentTM tm : tmlistS) {
-            if (lblSID1.getText().equals(tm.getID())) {
+            if (txtSID1.getText().equals(tm.getID())) {
                 return false;
             }
         }
@@ -656,6 +870,7 @@ public class DashboardViewController {
         cmbDurationType.getSelectionModel().clearSelection();
 
     }
+
 
     void loadDurationTypes() {
         cmbDurationType.getItems().add("Year");
@@ -732,7 +947,7 @@ public class DashboardViewController {
                         if (!cmbDurationType.getSelectionModel().isEmpty()) {
                             if (Pattern.compile("^[0-9.]{1,}$").matcher(txtFeeC.getText().trim()).matches()) {
                                 if (checkDuplicateCode()) {
-                                    boolean saveCourse = courseBO.saveCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getTypeR(), (txtDurationC.getText() + " " + cmbDurationType.getValue()), Double.parseDouble(txtFeeC.getText().trim())));
+                                    boolean saveCourse = courseBO.saveCourse(new CourseDTO(lblCIDC.getText(), txtCourseNameC.getText(), getType(), (txtDurationC.getText() + " " + cmbDurationType.getValue()), Double.parseDouble(txtFeeC.getText().trim())));
                                     if (saveCourse) {
                                         loadAllCourseDetail();
                                         generateCCode();
@@ -868,6 +1083,26 @@ public class DashboardViewController {
     public void cmbDurationTypeOnAction(ActionEvent actionEvent) {
         String s = (String) cmbDurationType.getValue();
         System.out.println(s);
+
+    }
+
+    public void tabOnAction(Event event) {
+        try {
+            if (!cmbCourseR.getItems().isEmpty()) {
+                cmbCourseR.getItems().clear();
+            }
+            listaddC.clear();
+            tblCourse1.refresh();
+            loadAllCourseCmb();
+        } catch (NullPointerException e) {
+        }
+
+    }
+
+    public void btnSearchStudentOnAction(ActionEvent actionEvent) {
+    }
+
+    public void btnRefreshOnAction(ActionEvent actionEvent) {
 
     }
 

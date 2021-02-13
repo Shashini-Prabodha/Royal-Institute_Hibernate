@@ -7,6 +7,7 @@ import lk.royal.hibernate.dao.custom.CourseDAO;
 import lk.royal.hibernate.dao.custom.RegisterDAO;
 import lk.royal.hibernate.dao.custom.StudentDAO;
 import lk.royal.hibernate.db.FactoryConfiguration;
+import lk.royal.hibernate.dto.CourseDTO;
 import lk.royal.hibernate.dto.RegistrationDTO;
 import lk.royal.hibernate.dto.StudentDTO;
 import lk.royal.hibernate.entity.Course;
@@ -31,10 +32,14 @@ public class RegisterBOImpl implements RegisterBO {
 
         StudentDTO studentDTO = dto.getStudentDTO();
         Student student = new Student(studentDTO.getID(), studentDTO.getName(), studentDTO.getAddress(), studentDTO.getContactNo(), studentDTO.getDob(), studentDTO.getGender());
+        List<CourseDTO> list = dto.getCourse_list();
+        List<Course> course_list = new ArrayList<>();
+        for (CourseDTO dto1 : list) {
+            course_list.add(new Course(dto1.getCode(),dto1.getCourseName(),dto1.getType(),dto1.getDuration(),dto1.getFee()));
+        }
+      //  Course course = courseDAO.get(dto.getCourse_code());
 
-        Course course = courseDAO.get(dto.getCourse_code());
-        System.out.println(dto.getRegNo()+" "+dto.getRegDate()+" "+ dto.getRegFee()+" "+student.getID()+" "+course.getCode());
-        return registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(),student,course));
+        return studentDAO.save(student) && registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(),student,course_list));
     }
 
     @Override

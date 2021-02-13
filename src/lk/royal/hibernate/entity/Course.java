@@ -1,9 +1,6 @@
 package lk.royal.hibernate.entity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +12,7 @@ public class Course implements SuperEntity{
     private String type;
     private String duration;
     private double fee;
-    @OneToMany(mappedBy = "course",cascade= CascadeType.ALL)
+    @ManyToMany(mappedBy = "course",cascade= CascadeType.ALL)
     private List<Registration> registrations=new ArrayList<>();
 
     public Course() {
