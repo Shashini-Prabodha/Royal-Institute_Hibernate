@@ -14,7 +14,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="611.0" prefWidth="519.0" style="-fx-background-radius: 50; -fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.royal.hibernate.controller.LoginViewController">
+<AnchorPane fx:id="root" prefHeight="611.0" prefWidth="519.0" style="-fx-background-radius: 50; -fx-background-color: white;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lk.royal.hibernate.controller.LoginViewController">
    <children>
       <ImageView fx:id="imgLogo" fitHeight="192.0" fitWidth="311.0" layoutX="134.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
          <image>
@@ -38,9 +38,9 @@
                <focusColor>
                   <LinearGradient endX="1.0" endY="1.0">
                      <stops>
-                        <Stop color="#c227ff" />
+                        <Stop color="WHITE" />
                         <Stop color="#39f2ff" offset="0.48366013071895425" />
-                        <Stop color="#ff4157" offset="1.0" />
+                        <Stop color="WHITE" offset="1.0" />
                      </stops>
                   </LinearGradient>
                </focusColor>
@@ -137,9 +137,9 @@
                <focusColor>
                   <LinearGradient endX="1.0" endY="1.0">
                      <stops>
-                        <Stop color="#c227ff" />
+                        <Stop color="WHITE" />
                         <Stop color="#39f2ff" offset="0.48366013071895425" />
-                        <Stop color="#ff4157" offset="1.0" />
+                        <Stop color="WHITE" offset="1.0" />
                      </stops>
                   </LinearGradient>
                </focusColor>

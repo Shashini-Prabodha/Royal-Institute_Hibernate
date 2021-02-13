@@ -1,6 +1,7 @@
 package lk.royal.hibernate.controller;
 
 import com.jfoenix.controls.*;
+import javafx.animation.FadeTransition;
 import javafx.animation.RotateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -12,9 +13,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import lk.royal.hibernate.bo.BOFactory;
 import lk.royal.hibernate.bo.BOType;
@@ -48,6 +51,7 @@ public class DashboardViewController {
     public JFXButton btnSearchStudent;
     public JFXButton btnRefresh;
     public JFXCheckBox checkBoxSAll;
+    public AnchorPane root;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -136,7 +140,7 @@ public class DashboardViewController {
 
     public void initialize() {
 
-
+        fadeTransition();
         loadID();
         loadAllStudent1();
         setNoOfCourse();
@@ -207,7 +211,7 @@ public class DashboardViewController {
         });
     }
 
-//    void rotateAnimation() {
+    //    void rotateAnimation() {
 //        RotateTransition transition = new RotateTransition();
 //        transition.setAxis(Rotate.Y_AXIS);
 //        transition.setByAngle(360);
@@ -217,10 +221,18 @@ public class DashboardViewController {
 //        transition.setNode(logo);
 //        transition.play();
 //    }
+    void fadeTransition() {
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(2000), root);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+        fadeIn.play();
+    }
 
     @FXML
     void btnOffOnAction(ActionEvent event) {
-
+        Stage stage = (Stage) btnOff.getScene().getWindow();
+        stage.close();
     }
 
     @FXML
