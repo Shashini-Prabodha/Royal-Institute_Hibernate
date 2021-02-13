@@ -1,10 +1,6 @@
 package lk.royal.hibernate.controller;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXDatePicker;
-import com.jfoenix.controls.JFXRadioButton;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import javafx.animation.RotateTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -25,10 +21,16 @@ import lk.royal.hibernate.bo.BOType;
 import lk.royal.hibernate.bo.custom.CourseBO;
 import lk.royal.hibernate.bo.custom.RegisterBO;
 import lk.royal.hibernate.bo.custom.StudentBO;
+import lk.royal.hibernate.dao.DAOFactory;
+import lk.royal.hibernate.dao.DAOType;
+import lk.royal.hibernate.dao.custom.CourseDAO;
+import lk.royal.hibernate.dao.custom.QueryDAO;
 import lk.royal.hibernate.dto.CourseDTO;
 import lk.royal.hibernate.dto.RegistrationDTO;
 import lk.royal.hibernate.dto.StudentDTO;
+import lk.royal.hibernate.entity.Student;
 import lk.royal.hibernate.view.TM.CourseTM;
+import lk.royal.hibernate.view.TM.CourseWiseStudentTM;
 import lk.royal.hibernate.view.TM.StudentTM;
 
 import java.awt.*;
@@ -45,6 +47,7 @@ public class DashboardViewController {
     public ImageView logo;
     public JFXButton btnSearchStudent;
     public JFXButton btnRefresh;
+    public JFXCheckBox checkBoxSAll;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -120,17 +123,19 @@ public class DashboardViewController {
     @FXML
     private JFXButton btnSearch, btnOff;
     @FXML
-    private TableView<?> tblStudentCWise;
+    private TableView<StudentDTO> tblStudentCWise;
     @FXML
     private TableColumn colSID1, colSName1, colAddress1, colContact1, colDOB1, colGender1, colDeleteS1;
     @FXML
-    private Label lblNoOfStudent, lblNoOfCourse;
+    private Label lblNoOfStudent, lblNoOfCourse, lblHide;
 
     StudentBO studentBO = BOFactory.getInstance().getBO(BOType.STUDENT);
     CourseBO courseBO = BOFactory.getInstance().getBO(BOType.COURSE);
     RegisterBO registerBO = BOFactory.getInstance().getBO(BOType.REGISTER);
 
+
     public void initialize() {
+
 
         loadID();
         loadAllStudent1();
@@ -141,6 +146,15 @@ public class DashboardViewController {
         loadAllCourseCmb();
         loadAllCourseCmbH();
         genarateRegNo();
+
+
+        //set course wise student detail tab table col
+        colSID1.setCellValueFactory(new PropertyValueFactory<>("ID"));
+        colSName1.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colAddress1.setCellValueFactory(new PropertyValueFactory<>("address"));
+        colContact1.setCellValueFactory(new PropertyValueFactory<>("contactNo"));
+        colDOB1.setCellValueFactory(new PropertyValueFactory<>("dob"));
+        colGender1.setCellValueFactory(new PropertyValueFactory<>("gender"));
 
         //set reg course detail tab table col
         colCode1.setCellValueFactory(new PropertyValueFactory<>("code"));
@@ -220,44 +234,44 @@ public class DashboardViewController {
                         if (dataPicker.getValue() != null) {
                             if (rbtnMale.isSelected() || rbtnFemale.isSelected()) {
 
-                                    if (Pattern.compile("^[0-9.]{1,}$").matcher(txtRegFee.getText().trim()).matches()) {
-                                        if (tblCourse1.getItems().size()>0) {
+                                if (Pattern.compile("^[0-9.]{1,}$").matcher(txtRegFee.getText().trim()).matches()) {
+                                    if (tblCourse1.getItems().size() > 0) {
 
-                                            LocalDate value = dataPicker.getValue();
-                                            Date dob1 = Date.valueOf(value);
+                                        LocalDate value = dataPicker.getValue();
+                                        Date dob1 = Date.valueOf(value);
 
-                                            StudentDTO studentDTO = new StudentDTO(txtSIDR.getText(), txtSName.getText(), txtAddr.getText(), Integer.parseInt(txtContact.getText()), dob1, getGender());
-                                            List<CourseDTO> courseDTOList = new ArrayList<>();
-                                            for (CourseTM tm : listaddC) {
-                                                CourseDTO courseDTO = new CourseDTO(tm.getCode(), tm.getCourseName(), tm.getType(), tm.getDuration(), tm.getFee());
-                                                courseDTOList.add(courseDTO);
-                                            }
+                                        StudentDTO studentDTO = new StudentDTO(txtSIDR.getText(), txtSName.getText(), txtAddr.getText(), Integer.parseInt(txtContact.getText()), dob1, getGender());
+                                        List<CourseDTO> courseDTOList = new ArrayList<>();
+                                        for (CourseTM tm : listaddC) {
+                                            CourseDTO courseDTO = new CourseDTO(tm.getCode(), tm.getCourseName(), tm.getType(), tm.getDuration(), tm.getFee());
+                                            courseDTOList.add(courseDTO);
+                                        }
 
-                                            RegistrationDTO registrationDTO = new RegistrationDTO(Integer.parseInt(lblRegNo.getText()), date, Double.parseDouble(txtRegFee.getText()), studentDTO, courseDTOList);
+                                        RegistrationDTO registrationDTO = new RegistrationDTO(Integer.parseInt(lblRegNo.getText()), date, Double.parseDouble(txtRegFee.getText()), studentDTO, courseDTOList);
 
 //                                        boolean saved = studentBO.saveStudent(studentDTO);
-                                            boolean register = registerBO.saveRegister(registrationDTO);
-                                            if (register) {
-                                                loadID();
-                                                loadAllStudent1();
-                                                clearCourse();
-                                                clearAll();
-                                                setNoOfStudent();
-                                                genarateRegNo();
-                                                new Alert(Alert.AlertType.CONFIRMATION, "Student Register...!").show();
-                                            } else {
-                                                new Alert(Alert.AlertType.ERROR, "Registration failed...!").show();
-                                            }
+                                        boolean register = registerBO.saveRegister(registrationDTO);
+                                        if (register) {
+                                            loadID();
+                                            loadAllStudent1();
+                                            clearCourse();
+                                            clearAll();
+                                            setNoOfStudent();
+                                            genarateRegNo();
+                                            new Alert(Alert.AlertType.CONFIRMATION, "Student Register...!").show();
                                         } else {
-                                            new Alert(Alert.AlertType.ERROR, "Please add course ").show();
-                                            cmbCourseR.requestFocus();
-                                            cmbCourseR.setFocusColor(Paint.valueOf("red"));
+                                            new Alert(Alert.AlertType.ERROR, "Registration failed...!").show();
                                         }
                                     } else {
-                                        new Alert(Alert.AlertType.ERROR, "Check Registration Fee Field...\n(Use only numbers for fill Fee...!)").show();
-                                        txtRegFee.setFocusColor(Paint.valueOf("red"));
-                                        txtRegFee.requestFocus();
+                                        new Alert(Alert.AlertType.ERROR, "Please add course ").show();
+                                        cmbCourseR.requestFocus();
+                                        cmbCourseR.setFocusColor(Paint.valueOf("red"));
                                     }
+                                } else {
+                                    new Alert(Alert.AlertType.ERROR, "Check Registration Fee Field...\n(Use only numbers for fill Fee...!)").show();
+                                    txtRegFee.setFocusColor(Paint.valueOf("red"));
+                                    txtRegFee.requestFocus();
+                                }
                             } else {
                                 new Alert(Alert.AlertType.ERROR, "Please Choose gender...!").show();
                                 rbtnMale.requestFocus();
@@ -463,15 +477,33 @@ public class DashboardViewController {
 
     @FXML
     void btnSearchOnAction(ActionEvent event) {
-
+        cmbCSAction();
     }
 
+    QueryDAO queryDAO = DAOFactory.getInstance().getDAO(DAOType.QUERY);
+
+    ObservableList<StudentDTO> listSC = FXCollections.observableArrayList();
 
     @FXML
     void cmbCourseOnAction(ActionEvent event) {
-
+        cmbCSAction();
     }
 
+    void cmbCSAction() {
+        listSC.clear();
+        tblStudentCWise.refresh();
+        String name = String.valueOf(cmbCourse.getValue());
+        try {
+            List<Student> courseWiseStudent = queryDAO.getCourseWiseStudent(courseBO.getCourseN(name).getCode());
+            for (Student dto : courseWiseStudent) {
+                StudentDTO student = new StudentDTO(dto.getID(), dto.getName(), dto.getAddress(), dto.getContactNo(), dto.getDob(), dto.getGender());
+                listSC.add(student);
+            }
+            tblStudentCWise.setItems(listSC);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
 
     //genarate student id
     public String generateSID() {
@@ -914,6 +946,7 @@ public class DashboardViewController {
                                         "Deleted", ButtonType.OK).show();
                                 loadAllCourseDetail();
                                 clearCourseDetailField();
+                                setNoOfStudent();
                                 return;
                             }
                             new Alert(Alert.AlertType.WARNING,
@@ -1100,10 +1133,60 @@ public class DashboardViewController {
     }
 
     public void btnSearchStudentOnAction(ActionEvent actionEvent) {
+
+        String SID = txtSID1.getText();
+        try {
+            JFXButton btn = new JFXButton("Delete");
+            StudentDTO dto = studentBO.getStudent(SID);
+            if (dto != null) {
+                tmlistS.clear();
+                tblStudent.refresh();
+                StudentTM tm = new StudentTM(dto.getID(), dto.getName(), dto.getAddress(), dto.getContactNo(), dto.getDob(), dto.getGender(), btn);
+                tmlistS.add(tm);
+                btn.setOnAction((e) -> {
+                    try {
+                        ButtonType ok = new ButtonType("OK",
+                                ButtonBar.ButtonData.OK_DONE);
+                        ButtonType no = new ButtonType("NO",
+                                ButtonBar.ButtonData.CANCEL_CLOSE);
+
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                                "Are You Sure ?", ok, no);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.orElse(no) == ok) {
+                            System.out.println(tm.getID());
+                            if (studentBO.deleteStudent(tm.getID())) {
+                                new Alert(Alert.AlertType.CONFIRMATION,
+                                        "Deleted", ButtonType.OK).show();
+                                loadAllStudent1();
+                                clearStudentDetailField();
+                                return;
+                            }
+                            new Alert(Alert.AlertType.WARNING, "Try Again", ButtonType.OK).show();
+                        } else {
+                            //no
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+            } else {
+                new Alert(Alert.AlertType.WARNING, "Can't find ID number.\nUse new button...", ButtonType.OK).show();
+                btnNewS.requestFocus();
+            }
+        } catch (Exception exception) {
+        }
     }
 
     public void btnRefreshOnAction(ActionEvent actionEvent) {
+        clearAll();
+        loadAllCourseCmb();
+    }
 
+    public void checkBoxSAllOnAction(ActionEvent actionEvent) {
+        if (checkBoxSAll.isSelected()) {
+            loadAllStudent1();
+        }
     }
 
 

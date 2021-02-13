@@ -15,7 +15,7 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <datasource-mapping>
-          <factory-entry name="Royal-Institute-master" value="8886a571-518e-4667-8447-762be09062a6" />
+          <factory-entry name="Royal-Institute-master" value="c3a11fe9-a450-4400-8f66-ee20159d0996" />
         </datasource-mapping>
         <naming-strategy-map />
       </configuration>

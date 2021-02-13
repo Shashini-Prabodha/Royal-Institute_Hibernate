@@ -13,11 +13,11 @@ public class Registration implements SuperEntity{
     private double regFee;
 
     @ManyToOne
-//    @JoinColumn(name = "Student_ID", referencedColumnName = "ID" , insertable = false , updatable = false)
+//    @JoinColumn(name = "student_ID", referencedColumnName = "id", nullable = false)
     private Student student;
 
     @ManyToMany
-//    @JoinColumn(name = "Course_code", referencedColumnName = "code" , insertable = false , updatable = false)
+//    @JoinTable(name = "Course")
     private List<Course> course;
 
     public Registration() {

@@ -21,25 +21,30 @@ import java.util.List;
 public class RegisterBOImpl implements RegisterBO {
 
     RegisterDAO registerDAO = DAOFactory.getInstance().getDAO(DAOType.REGISTER);
-   CourseDAO courseDAO = DAOFactory.getInstance().getDAO(DAOType.COURSE);
+    CourseDAO courseDAO = DAOFactory.getInstance().getDAO(DAOType.COURSE);
     StudentDAO studentDAO = DAOFactory.getInstance().getDAO(DAOType.STUDENT);
 
     @Override
     public boolean saveRegister(RegistrationDTO dto) throws Exception {
         Session session = FactoryConfiguration.getInstance().getSession();
+        try {
+            session.beginTransaction();
 
-        session.beginTransaction();
+            StudentDTO studentDTO = dto.getStudentDTO();
+            Student student = new Student(studentDTO.getID(), studentDTO.getName(), studentDTO.getAddress(), studentDTO.getContactNo(), studentDTO.getDob(), studentDTO.getGender());
+            List<CourseDTO> list = dto.getCourse_list();
+            List<Course> course_list = new ArrayList<>();
+            for (CourseDTO dto1 : list) {
+                course_list.add(new Course(dto1.getCode(), dto1.getCourseName(), dto1.getType(), dto1.getDuration(), dto1.getFee()));
+            }
 
-        StudentDTO studentDTO = dto.getStudentDTO();
-        Student student = new Student(studentDTO.getID(), studentDTO.getName(), studentDTO.getAddress(), studentDTO.getContactNo(), studentDTO.getDob(), studentDTO.getGender());
-        List<CourseDTO> list = dto.getCourse_list();
-        List<Course> course_list = new ArrayList<>();
-        for (CourseDTO dto1 : list) {
-            course_list.add(new Course(dto1.getCode(),dto1.getCourseName(),dto1.getType(),dto1.getDuration(),dto1.getFee()));
+            return studentDAO.save(student) && registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(), student, course_list));
+        } catch (Throwable t) {
+            session.getTransaction().rollback();
+            throw t;
+        } finally {
+            session.close();
         }
-      //  Course course = courseDAO.get(dto.getCourse_code());
-
-        return studentDAO.save(student) && registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(),student,course_list));
     }
 
     @Override
@@ -74,6 +79,6 @@ public class RegisterBOImpl implements RegisterBO {
 
     @Override
     public int newRegNo() throws Exception {
-        return registerDAO.getLastRegNo()+1;
+        return registerDAO.getLastRegNo() + 1;
     }
 }
