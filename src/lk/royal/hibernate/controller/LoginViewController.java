@@ -64,6 +64,8 @@ public class LoginViewController {
             String password = txtPassword.getText();
             if (name != null && name.equalsIgnoreCase("user")) {
                 if (password != null && password.equalsIgnoreCase("user1234")) {
+                    Stage s = (Stage) root.getScene().getWindow();
+                    s.close();
                     loadUI("DashboardView");
                 } else {
                     txtPassword.requestFocus();
@@ -88,6 +90,7 @@ public class LoginViewController {
         fadeIn.setToValue(1.0);
         fadeIn.play();
     }
+
     void rotateAnimation() {
         RotateTransition transition = new RotateTransition();
         transition.setAxis(Rotate.Y_AXIS);
@@ -98,8 +101,11 @@ public class LoginViewController {
         transition.setNode(imgLogo);
         transition.play();
     }
+
     void loadUI(String location) {
         try {
+
+
             URL resource = this.getClass().getResource("/lk/royal/hibernate/view/" + location + ".fxml");
             Parent load = null;
             load = FXMLLoader.load(resource);

@@ -21,6 +21,13 @@ public class RegistrationDTO {
         Course_list = course_list;
     }
 
+    public RegistrationDTO(Date  regDate,double regFee, StudentDTO studentDTO, List<CourseDTO> course_list) {
+        this.regDate = regDate;
+        this.regFee = regFee;
+        this.studentDTO = studentDTO;
+        Course_list = course_list;
+    }
+
     public int getRegNo() {
         return regNo;
     }

@@ -37,8 +37,14 @@ public class RegisterBOImpl implements RegisterBO {
             for (CourseDTO dto1 : list) {
                 course_list.add(new Course(dto1.getCode(), dto1.getCourseName(), dto1.getType(), dto1.getDuration(), dto1.getFee()));
             }
+            if (studentDAO.get(student.getID()) == null) {
+                return studentDAO.save(student) && registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(), student, course_list));
+//                return studentDAO.save(student) && registerDAO.save(new Registration( dto.getRegDate(), dto.getRegFee(), student, course_list));
 
-            return studentDAO.save(student) && registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(), student, course_list));
+            }
+            return registerDAO.save(new Registration(dto.getRegNo(), dto.getRegDate(), dto.getRegFee(), student, course_list));
+//            return registerDAO.save(new Registration(dto.getRegDate(), dto.getRegFee(), student, course_list));
+
         } catch (Throwable t) {
             session.getTransaction().rollback();
             throw t;

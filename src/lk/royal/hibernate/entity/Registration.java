@@ -7,6 +7,7 @@ import java.util.List;
 @Entity
 public class Registration implements SuperEntity{
     @Id
+//    @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int regNo;
     private Date regDate;

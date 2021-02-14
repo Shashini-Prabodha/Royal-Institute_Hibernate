@@ -141,6 +141,7 @@ public class DashboardViewController {
     public void initialize() {
 
         fadeTransition();
+//        rotateAnimation();
         loadID();
         loadAllStudent1();
         setNoOfCourse();
@@ -211,16 +212,17 @@ public class DashboardViewController {
         });
     }
 
-    //    void rotateAnimation() {
-//        RotateTransition transition = new RotateTransition();
-//        transition.setAxis(Rotate.Y_AXIS);
-//        transition.setByAngle(360);
-//        transition.setCycleCount(500);
-//        transition.setDuration(Duration.seconds(30));
-//        transition.setAutoReverse(true);
-//        transition.setNode(logo);
-//        transition.play();
-//    }
+    void rotateAnimation() {
+        RotateTransition transition = new RotateTransition();
+        transition.setAxis(Rotate.Y_AXIS);
+        transition.setByAngle(360);
+        transition.setCycleCount(500);
+        transition.setDuration(Duration.seconds(30));
+        transition.setAutoReverse(true);
+        transition.setNode(logo);
+        transition.play();
+    }
+
     void fadeTransition() {
 
         FadeTransition fadeIn = new FadeTransition(Duration.millis(2000), root);
@@ -260,8 +262,8 @@ public class DashboardViewController {
                                         }
 
                                         RegistrationDTO registrationDTO = new RegistrationDTO(Integer.parseInt(lblRegNo.getText()), date, Double.parseDouble(txtRegFee.getText()), studentDTO, courseDTOList);
+//                                        RegistrationDTO registrationDTO = new RegistrationDTO(date, Double.parseDouble(txtRegFee.getText()), studentDTO, courseDTOList);
 
-//                                        boolean saved = studentBO.saveStudent(studentDTO);
                                         boolean register = registerBO.saveRegister(registrationDTO);
                                         if (register) {
                                             loadID();
@@ -376,21 +378,13 @@ public class DashboardViewController {
         }
     }
 
-    private String getTypeR() {
-        if (rbtnFullTime.isSelected()) {
-            return "Full Time";
-        } else {
-            return "Part Time";
-        }
-    }
-
-
     // load all course name
     void loadAllCourseCmbR() {
 
         try {
-            ObservableList<String> cmbCourseRItems = cmbCourseR.getItems();
-
+            ObservableList<String> cmbCourseRItems = FXCollections.observableArrayList();
+            cmbCourseRItems.clear();
+            cmbCourseRItems = cmbCourseR.getItems();
             if (!cmbCourseRItems.isEmpty()) {
                 ArrayList<CourseDTO> allCourse = courseBO.getAllCourse();
                 for (int i = 0; i < allCourse.size(); i++) {
@@ -420,10 +414,8 @@ public class DashboardViewController {
 
                 listaddC.add(tm);
                 tblCourse1.setItems(listaddC);
-                getTotalFee();
                 tblCourse1.refresh();
                 loadAllCourseCmbR();
-                loadAllCourseCmb();
                 clearCourse();
                 btn.setOnAction((e) -> {
                     try {
@@ -437,16 +429,6 @@ public class DashboardViewController {
                                 "Are You Sure ?", ok, no);
                         Optional<ButtonType> result = alert.showAndWait();
                         if (result.orElse(no) == ok) {
-//
-//                       if (courseBO.deleteCourse(tm.getCode())) {
-//                           new Alert(Alert.AlertType.CONFIRMATION,
-//                                   "Deleted", ButtonType.OK).show();
-//                           loadAllCourseDetail();
-//                           clearCourseDetailField();
-//                           return;
-//                       }
-//                       new Alert(Alert.AlertType.WARNING,
-//                               "Try Again", ButtonType.OK).show();
 
                             int index = tblCourse1.getSelectionModel().getFocusedIndex();
                             listaddC.remove(index);
@@ -481,11 +463,6 @@ public class DashboardViewController {
         cmbCourseR.getSelectionModel().clearSelection();
     }
 
-    static double total = 0.0;
-
-    private void getTotalFee() {
-
-    }
 
     @FXML
     void btnSearchOnAction(ActionEvent event) {
@@ -528,7 +505,6 @@ public class DashboardViewController {
         return s;
     }
 
-
     public void btnSearchStudentROnAction(ActionEvent actionEvent) {
         String sid = txtSIDR.getText();
         try {
@@ -554,7 +530,6 @@ public class DashboardViewController {
             e.printStackTrace();
         }
     }
-
 
     public void btnNewStudentOnAction(ActionEvent actionEvent) {
     }
@@ -998,7 +973,7 @@ public class DashboardViewController {
                                         generateCCode();
                                         clearCourseDetailField();
                                         loadAllCourseCmb();
-
+                                        setNoOfCourse();
                                         new Alert(Alert.AlertType.CONFIRMATION, "Course Saved...!").show();
                                     } else {
                                         new Alert(Alert.AlertType.ERROR, "Failed...!").show();
@@ -1053,7 +1028,6 @@ public class DashboardViewController {
         return true;
     }
 
-
     private String getType() {
         if (rbtnFullTimeC.isSelected()) {
             return "Full Time";
@@ -1061,7 +1035,7 @@ public class DashboardViewController {
             return "Part Time";
         }
     }
-
+    //    ************************  Course Detail Tab End *****************************
 
     public void btnUpdateOnActionC(ActionEvent actionEvent) {
         try {
@@ -1201,7 +1175,5 @@ public class DashboardViewController {
         }
     }
 
-
-    //    ************************  Course Detail Tab End *****************************
 
 }
