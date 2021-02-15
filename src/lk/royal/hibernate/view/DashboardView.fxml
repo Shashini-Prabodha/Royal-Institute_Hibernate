@@ -57,13 +57,13 @@
                                     </LinearGradient>
                                  </fill>
                               </Text>
-                              <JFXComboBox fx:id="cmbCourse" editable="true" labelFloat="true" layoutX="202.0" layoutY="91.0" onAction="#cmbCourseOnAction" prefHeight="31.0" prefWidth="396.0" promptText="Course Name" stylesheets="@../assests/style/style.css">
+                              <JFXComboBox fx:id="cmbCourse" editable="true" labelFloat="true" layoutX="89.0" layoutY="92.0" onAction="#cmbCourseOnAction" prefHeight="31.0" prefWidth="396.0" promptText="Course Name" stylesheets="@../assests/style/style.css">
                                  <styleClass>
                                     <String fx:value="cell" />
                                     <String fx:value="combo-box" />
                                  </styleClass>
                               </JFXComboBox>
-                              <JFXButton fx:id="btnSearch" layoutX="621.0" layoutY="88.0" onAction="#btnSearchOnAction" prefHeight="36.0" prefWidth="24.0" style="-fx-background-radius: 100; -fx-background-radius: 100;" text=" ">
+                              <JFXButton fx:id="btnSearch" layoutX="501.0" layoutY="89.0" onAction="#btnSearchOnAction" prefHeight="36.0" prefWidth="24.0" style="-fx-background-radius: 100; -fx-background-radius: 100;" text=" ">
                                  <graphic>
                                     <ImageView fitHeight="29.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -82,6 +82,11 @@
                                     <TableColumn fx:id="colGender1" prefWidth="139.0" text="Gender" />
                                  </columns>
                               </TableView>
+                              <JFXCheckBox fx:id="checkBoxSAll1" layoutX="779.0" layoutY="98.0" onAction="#checkBoxS1AllOnAction" prefHeight="21.0" prefWidth="173.0" text="Show All Students">
+                                 <font>
+                                    <Font name="Times New Roman" size="15.0" />
+                                 </font>
+                              </JFXCheckBox>
                            </children>
                         </Pane>
                         <Pane layoutX="189.0" layoutY="47.0" prefHeight="145.0" prefWidth="273.0" style="-fx-background-radius: 50; -fx-background-color: linear-gradient(to right top, #611ecb, #622ad4, #6435dd, #653fe5, #6648ee, #7851f2, #875af6, #9663fa, #b170fa, #c87ffb, #dc8ffd, #eda0ff);">
@@ -406,7 +411,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="538.0" prefWidth="1127.0">
                      <children>
-                        <TableView fx:id="tblCourse" layoutX="516.0" layoutY="141.0" prefHeight="401.0" prefWidth="617.0" stylesheets="@../assests/style/newTableStyles.css">
+                        <TableView fx:id="tblCourse" layoutX="516.0" layoutY="141.0" prefHeight="339.0" prefWidth="617.0" stylesheets="@../assests/style/newTableStyles.css">
                           <columns>
                             <TableColumn fx:id="colCode" prefWidth="75.0" text="Code" />
                             <TableColumn fx:id="colCName" prefWidth="141.0" text="Name" />

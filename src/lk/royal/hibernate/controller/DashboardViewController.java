@@ -52,6 +52,7 @@ public class DashboardViewController {
     public JFXButton btnRefresh;
     public JFXCheckBox checkBoxSAll;
     public AnchorPane root;
+    public JFXCheckBox checkBoxSAll1;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -1176,4 +1177,28 @@ public class DashboardViewController {
     }
 
 
+    public void checkBoxS1AllOnAction(ActionEvent actionEvent) {
+        if (checkBoxSAll1.isSelected()) {
+            cmbCSAllAction();
+        } else {
+            listSC.clear();
+            tblStudentCWise.refresh();
+        }
+    }
+
+    void cmbCSAllAction() {
+        listSC.clear();
+        tblStudentCWise.refresh();
+        String name = String.valueOf(cmbCourse.getValue());
+        try {
+            List<Student> courseAStudent = queryDAO.getCourseAllStudent();
+            for (Student dto : courseAStudent) {
+                StudentDTO student = new StudentDTO(dto.getID(), dto.getName(), dto.getAddress(), dto.getContactNo(), dto.getDob(), dto.getGender());
+                listSC.add(student);
+            }
+            tblStudentCWise.setItems(listSC);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
 }
